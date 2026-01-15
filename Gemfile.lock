@@ -101,7 +101,7 @@ GEM
       rack-test (>= 0.6.3)
       regexp_parser (>= 1.5, < 3.0)
       xpath (~> 3.2)
-    cloudmersive-virus-scan-api-client (2.0.9)
+    cloudmersive-virus-scan-api-client (2.2.0)
       json (~> 2.1, >= 2.1.0)
       typhoeus (~> 1.0, >= 1.0.1)
     concurrent-ruby (1.3.6)
@@ -515,7 +515,7 @@ DEPENDENCIES
   bootsnap
   brakeman
   capybara
-  cloudmersive-virus-scan-api-client (~> 2.0.3)
+  cloudmersive-virus-scan-api-client (~> 2.2.0)
   debug
   devise (~> 4.9)
   factory_bot_rails (~> 6.4)
@@ -579,7 +579,7 @@ CHECKSUMS
   brakeman (7.1.2) sha256=6b04927710a2e7d13a72248b5d404c633188e02417f28f3d853e4b6370d26dce
   builder (3.3.0) sha256=497918d2f9dca528fdca4b88d84e4ef4387256d984b8154e9d5d3fe5a9c8835f
   capybara (3.40.0) sha256=42dba720578ea1ca65fd7a41d163dd368502c191804558f6e0f71b391054aeef
-  cloudmersive-virus-scan-api-client (2.0.9) sha256=cea18de08b9d26d1b8c48580171ea8bf8d65500953f4a6f09268b6196bc361de
+  cloudmersive-virus-scan-api-client (2.2.0) sha256=07d9b182826fc490aca2df2281e043d080f8c018e0b224210d1cde86dcad6c73
   concurrent-ruby (1.3.6) sha256=6b56837e1e7e5292f9864f34b69c5a2cbc75c0cf5338f1ce9903d10fa762d5ab
   connection_pool (3.0.2) sha256=33fff5ba71a12d2aa26cb72b1db8bba2a1a01823559fb01d29eb74c286e62e0a
   crack (1.0.1) sha256=ff4a10390cd31d66440b7524eb1841874db86201d5b70032028553130b6d4c7e

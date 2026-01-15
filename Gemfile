@@ -47,7 +47,7 @@ gem "wicked_pdf", "~> 2.8"
 # Note: Using system wkhtmltopdf installed via nixpacks (Railway) instead of gem binary
 
 # Virus scanning - Cloudmersive API (cloud-based, no memory issues)
-gem "cloudmersive-virus-scan-api-client", "~> 2.0.3"
+gem "cloudmersive-virus-scan-api-client", "~> 2.2.0"
 
 # Bot protection and rate limiting
 gem "rack-attack", "~> 6.7"
