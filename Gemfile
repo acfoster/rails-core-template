@@ -21,7 +21,7 @@ gem "tailwindcss-rails"
 gem "devise", "~> 4.9"
 
 # Email delivery via Resend
-gem "resend", "~> 0.11"
+gem "resend", "~> 1.0"
 
 # Payments
 gem "stripe", "~> 12.0"
