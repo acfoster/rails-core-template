@@ -1,0 +1,49 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+CLAMAV_INTEGRATION.md
+IMAGE_UPLOAD_IMPLEMENTATION.md
+*.md
+
+# CI/CD
+.github
+.circleci
+.travis.yml
+
+# Development files
+.env.development
+.env.test
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Logs
+log/*
+tmp/*
+*.log
+
+# Test files
+test/
+spec/
+.rspec
+coverage/
+
+# Node modules (if any)
+node_modules/
+
+# Backups
+*.backup
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary test files
+tmp/virus_scan_test/

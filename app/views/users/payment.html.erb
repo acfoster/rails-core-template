@@ -1,0 +1,63 @@
+<%= render layout: "users/profile_layout" do %>
+  <div class="profile-header">
+    <h1>Subscription & Billing</h1>
+    <p>Manage your subscription, payment methods, and billing information</p>
+  </div>
+
+  <div class="card">
+    <h2>Current Subscription</h2>
+    <div style="padding: var(--space-lg); background: var(--color-background-alt); border-radius: var(--radius-md); margin-bottom: var(--space-lg);">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h4 style="margin: 0 0 var(--space-xs) 0;">Monthly Subscription</h4>
+          <p style="margin: 0; color: var(--color-text-light); font-size: var(--font-size-sm);">
+            $5.00 per month
+          </p>
+        </div>
+        <div>
+          <% if current_user.subscription_status == "trialing" %>
+            <span class="badge badge-info" style="background-color: var(--color-info);">Trial</span>
+          <% elsif current_user.subscription_status == "active" %>
+            <span class="badge badge-success">Active</span>
+          <% elsif current_user.subscription_status == "past_due" %>
+            <span class="badge badge-warning">Past Due</span>
+          <% elsif current_user.subscription_status == "canceled" %>
+            <span class="badge badge-danger">Canceled</span>
+          <% else %>
+            <span class="badge badge-secondary"><%= current_user.subscription_status.titleize %></span>
+          <% end %>
+        </div>
+      </div>
+
+      <% if current_user.subscription_cancel_at.present? && current_user.subscription_status == "active" %>
+        <div style="margin-top: var(--space-md); padding: var(--space-md); background: var(--color-warning); color: #000; border-radius: var(--radius-md);">
+          <strong>⚠️ Subscription Canceling</strong>
+          <p style="margin: var(--space-xs) 0 0 0; font-size: var(--font-size-sm);">
+            Your subscription will cancel on <%= current_user.subscription_cancel_at.strftime("%B %-d, %Y") %>.
+            You'll continue to have access until then. You can reactivate anytime through the billing portal.
+          </p>
+        </div>
+      <% end %>
+    </div>
+
+    <% if current_user.stripe_customer_id.present? %>
+      <%= form_with url: portal_subscription_path, method: :get, data: { turbo: false } do |f| %>
+        <%= f.submit "Manage Billing & Payment Methods", class: "btn btn-primary", style: "width: 100%;" %>
+      <% end %>
+      <p class="field-hint" style="margin-top: var(--space-md);">
+        Opens Stripe's secure billing portal where you can:
+      </p>
+      <ul class="field-hint" style="margin-top: var(--space-sm); padding-left: var(--space-lg);">
+        <li>Update payment methods</li>
+        <li>View billing history and invoices</li>
+        <li>Update billing address</li>
+        <li>Cancel or modify your subscription</li>
+      </ul>
+    <% else %>
+      <%= link_to "Subscribe Now", new_subscription_path, class: "btn btn-primary", style: "width: 100%;" %>
+      <p class="field-hint" style="margin-top: var(--space-md);">
+        You don't have an active subscription yet.
+      </p>
+    <% end %>
+  </div>
+<% end %>

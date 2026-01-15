@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# This script runs on Railway during deployment (release phase)
+
+set -e
+
+echo "Running database migrations..."
+bundle exec rails db:migrate
+
+echo "Loading Solid Queue schema..."
+bundle exec rails runner "
+  begin
+    # Check if solid_queue_processes table exists
+    ActiveRecord::Base.connection.execute(\"SELECT 1 FROM solid_queue_processes LIMIT 1\")
+    puts 'Solid Queue tables already exist'
+  rescue ActiveRecord::StatementInvalid
+    puts 'Loading Solid Queue schema...'
+    load(Rails.root.join('db/queue_schema.rb'))
+    puts 'Solid Queue schema loaded successfully'
+  end
+"
+
+echo "Cleaning up old/invalid jobs..."
+bundle exec rails jobs:cleanup_invalid || echo "Job cleanup task not found or failed (non-critical)"
+
+echo "Release phase completed successfully"

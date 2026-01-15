@@ -1,0 +1,281 @@
+<%= render layout: "users/profile_layout" do %>
+  <div class="profile-header">
+    <h1>Account & Password</h1>
+    <p>Update your email and password</p>
+  </div>
+
+  <div class="card">
+    <h2>Email Address</h2>
+    <p class="field-hint" style="margin-bottom: var(--space-lg);">
+      Your email address is used for login and notifications.
+    </p>
+
+    <%= form_with model: @user, url: user_registration_path, method: :patch, id: "email-form" do |f| %>
+      <div class="form-group">
+        <%= f.label :email, class: "form-label" %>
+        <%= f.email_field :email, class: "form-input", autocomplete: "email", required: true, id: "email-input" %>
+        <span class="field-error" id="email-error" style="display: none;"></span>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :current_password, "Current Password (required to save changes)", class: "form-label" %>
+        <%= f.password_field :current_password, class: "form-input", autocomplete: "current-password", placeholder: "Enter your current password", required: true, id: "email-current-password" %>
+        <span class="field-hint">We need your current password to confirm changes</span>
+      </div>
+
+      <div class="form-actions">
+        <%= f.submit "Update Email", class: "btn btn-primary", id: "email-submit" %>
+      </div>
+
+      <div class="processing-overlay" id="email-processing" style="display: none;">
+        <div class="spinner"></div>
+        <p>Updating email...</p>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="card">
+    <h2>Change Password</h2>
+    <p class="field-hint" style="margin-bottom: var(--space-lg);">
+      Choose a strong password with at least 6 characters.
+    </p>
+
+    <%= form_with model: @user, url: user_registration_path, method: :patch, id: "password-form" do |f| %>
+      <div class="form-group">
+        <%= f.label :current_password, "Current Password", class: "form-label" %>
+        <%= f.password_field :current_password, class: "form-input", autocomplete: "current-password", required: true, id: "password-current" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password, "New Password", class: "form-label" %>
+        <%= f.password_field :password, class: "form-input", autocomplete: "new-password", placeholder: "At least 6 characters", required: true, minlength: 6, id: "password-new" %>
+        <span class="field-error" id="password-error" style="display: none;"></span>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password_confirmation, "Confirm New Password", class: "form-label" %>
+        <%= f.password_field :password_confirmation, class: "form-input", autocomplete: "new-password", required: true, id: "password-confirm" %>
+        <span class="field-error" id="password-match-error" style="display: none;"></span>
+      </div>
+
+      <div class="form-actions">
+        <%= f.submit "Update Password", class: "btn btn-primary", id: "password-submit" %>
+      </div>
+
+      <div class="processing-overlay" id="password-processing" style="display: none;">
+        <div class="spinner"></div>
+        <p>Updating password...</p>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<style>
+  .field-error {
+    display: block;
+    color: var(--color-danger);
+    font-size: 0.875rem;
+    margin-top: var(--space-xs);
+  }
+
+  .form-input.invalid {
+    border-color: var(--color-danger);
+  }
+
+  .form-input.valid {
+    border-color: var(--color-success);
+  }
+
+  .card {
+    position: relative;
+  }
+
+  .processing-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    z-index: 10;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-left-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Email form validation
+    const emailForm = document.getElementById('email-form');
+    const emailInput = document.getElementById('email-input');
+    const emailError = document.getElementById('email-error');
+    const emailSubmit = document.getElementById('email-submit');
+    const emailCurrentPassword = document.getElementById('email-current-password');
+
+    if (emailForm && emailInput && emailError) {
+      emailInput.addEventListener('blur', function() {
+        validateEmail();
+      });
+
+      emailInput.addEventListener('input', function() {
+        if (emailError.style.display !== 'none') {
+          validateEmail();
+        }
+      });
+
+      emailForm.addEventListener('submit', function(e) {
+        const isValid = validateEmail();
+        const hasPassword = emailCurrentPassword.value.length > 0;
+
+        if (!isValid || !hasPassword) {
+          e.preventDefault();
+          if (!hasPassword) {
+            emailCurrentPassword.classList.add('invalid');
+          }
+          return false;
+        }
+
+        // Show processing overlay
+        const overlay = document.getElementById('email-processing');
+        if (overlay) {
+          overlay.style.display = 'flex';
+        }
+        emailSubmit.disabled = true;
+      });
+
+      function validateEmail() {
+        const email = emailInput.value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!email) {
+          emailInput.classList.remove('valid', 'invalid');
+          emailError.style.display = 'none';
+          return false;
+        } else if (!emailRegex.test(email)) {
+          emailInput.classList.add('invalid');
+          emailInput.classList.remove('valid');
+          emailError.textContent = 'Please enter a valid email address';
+          emailError.style.display = 'block';
+          return false;
+        } else {
+          emailInput.classList.add('valid');
+          emailInput.classList.remove('invalid');
+          emailError.style.display = 'none';
+          return true;
+        }
+      }
+    }
+
+    // Password form validation
+    const passwordForm = document.getElementById('password-form');
+    const passwordCurrent = document.getElementById('password-current');
+    const passwordNew = document.getElementById('password-new');
+    const passwordConfirm = document.getElementById('password-confirm');
+    const passwordError = document.getElementById('password-error');
+    const passwordMatchError = document.getElementById('password-match-error');
+    const passwordSubmit = document.getElementById('password-submit');
+
+    if (passwordForm && passwordNew && passwordConfirm) {
+      passwordNew.addEventListener('input', function() {
+        validatePassword();
+        if (passwordConfirm.value) {
+          validatePasswordMatch();
+        }
+      });
+
+      passwordNew.addEventListener('blur', function() {
+        validatePassword();
+      });
+
+      passwordConfirm.addEventListener('input', function() {
+        validatePasswordMatch();
+      });
+
+      passwordConfirm.addEventListener('blur', function() {
+        validatePasswordMatch();
+      });
+
+      passwordForm.addEventListener('submit', function(e) {
+        const isPasswordValid = validatePassword();
+        const isMatchValid = validatePasswordMatch();
+        const hasCurrentPassword = passwordCurrent.value.length > 0;
+
+        if (!isPasswordValid || !isMatchValid || !hasCurrentPassword) {
+          e.preventDefault();
+          if (!hasCurrentPassword) {
+            passwordCurrent.classList.add('invalid');
+          }
+          return false;
+        }
+
+        // Show processing overlay
+        const overlay = document.getElementById('password-processing');
+        if (overlay) {
+          overlay.style.display = 'flex';
+        }
+        passwordSubmit.disabled = true;
+      });
+
+      function validatePassword() {
+        const password = passwordNew.value;
+
+        if (password.length === 0) {
+          passwordNew.classList.remove('valid', 'invalid');
+          passwordError.style.display = 'none';
+          return false;
+        } else if (password.length < 6) {
+          passwordNew.classList.add('invalid');
+          passwordNew.classList.remove('valid');
+          passwordError.textContent = 'Password must be at least 6 characters';
+          passwordError.style.display = 'block';
+          return false;
+        } else {
+          passwordNew.classList.add('valid');
+          passwordNew.classList.remove('invalid');
+          passwordError.style.display = 'none';
+          return true;
+        }
+      }
+
+      function validatePasswordMatch() {
+        const password = passwordNew.value;
+        const confirmation = passwordConfirm.value;
+
+        if (confirmation.length === 0) {
+          passwordConfirm.classList.remove('valid', 'invalid');
+          passwordMatchError.style.display = 'none';
+          return false;
+        } else if (password !== confirmation) {
+          passwordConfirm.classList.add('invalid');
+          passwordConfirm.classList.remove('valid');
+          passwordMatchError.textContent = 'Passwords do not match';
+          passwordMatchError.style.display = 'block';
+          return false;
+        } else {
+          passwordConfirm.classList.add('valid');
+          passwordConfirm.classList.remove('invalid');
+          passwordMatchError.style.display = 'none';
+          return true;
+        }
+      }
+    }
+  });
+</script>

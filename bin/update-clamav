@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Update ClamAV virus database
+# Run this periodically to keep virus signatures up to date
+# In Docker: Can be run during build or as a startup task
+
+set -e
+
+echo "========================================="
+echo "ClamAV Database Update Script"
+echo "========================================="
+echo ""
+
+# Check if freshclam is available
+if ! command -v freshclam &> /dev/null; then
+    echo "ERROR: freshclam command not found"
+    echo "ClamAV does not appear to be installed"
+    exit 1
+fi
+
+echo "Running freshclam to update virus database..."
+echo "This may take 1-2 minutes on first run..."
+echo ""
+
+# Update virus database
+# --verbose: Show detailed progress
+# --stdout: Output to console
+# --no-warnings: Suppress non-critical warnings
+if freshclam --verbose --stdout --no-warnings; then
+    echo ""
+    echo "✓ ClamAV database updated successfully"
+    echo ""
+
+    # Show database info
+    if command -v sigtool &> /dev/null; then
+        echo "Database statistics:"
+        sigtool --info /var/lib/clamav/daily.cvd 2>/dev/null || echo "  (daily.cvd info unavailable)"
+        sigtool --info /var/lib/clamav/main.cvd 2>/dev/null || echo "  (main.cvd info unavailable)"
+    fi
+
+    exit 0
+else
+    echo ""
+    echo "⚠ WARNING: Database update encountered issues"
+    echo "Scanning may still work with existing database"
+    echo ""
+    exit 0  # Don't fail the script - allow app to start with old DB
+fi

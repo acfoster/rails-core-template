@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+export RBENV_ROOT="${RBENV_ROOT:-$HOME/.rbenv}"
+export PATH="$RBENV_ROOT/bin:$PATH"
+
+if ! command -v rbenv >/dev/null 2>&1; then
+  for candidate in /opt/homebrew/bin /usr/local/bin; do
+    if [[ -x "$candidate/rbenv" ]]; then
+      export PATH="$candidate:$PATH"
+      break
+    fi
+  done
+fi
+
+if command -v rbenv >/dev/null 2>&1; then
+  eval "$(rbenv init -)"
+  rbenv shell "$(cat .ruby-version)"
+else
+  echo "rbenv not found. Cannot force project Ruby."
+  exit 1
+fi
+
+BVER=$(ruby -e 'puts File.read("Gemfile.lock")[/BUNDLED WITH\n\s+([\d\.]+)/,1]')
+
+if [[ -z "${BVER}" ]]; then
+  echo "Could not determine bundler version from Gemfile.lock"
+  exit 1
+fi
+
+if ! gem list bundler -i -v "${BVER}" >/dev/null 2>&1; then
+  gem install bundler -v "${BVER}"
+fi
+
+echo "Ruby: $(ruby -v)"
+echo "Ruby path: $(which ruby)"
+echo "Bundler: $(bundle -v)"
+
+bundle _${BVER}_ install
+bundle _${BVER}_ exec rails -v
+bundle _${BVER}_ exec rails routes | head -n 5
+
+echo "Bootstrap complete (rbenv)"

@@ -1,0 +1,14 @@
+<nav class="admin-sidebar">
+  <div class="sidebar-header">
+    <h2>Admin Panel</h2>
+  </div>
+  <ul>
+    <li><%= link_to 'Dashboard', admin_root_path, class: (current_page?(admin_root_path) ? 'active' : '') %></li>
+    <li><%= link_to 'Users', admin_users_path, class: (controller_name == 'users' && action_name.in?(['index', 'show']) ? 'active' : '') %></li>
+    <li><%= link_to 'Logs', admin_logs_path, class: (controller_name == 'logs' ? 'active' : '') %></li>
+    <li><%= link_to 'Financials', admin_financials_path, class: (controller_name == 'financials' ? 'active' : '') %></li>
+  </ul>
+  <div class="sidebar-footer">
+    <%= button_to 'Logout', destroy_user_session_path, method: :delete, class: 'btn-logout' %>
+  </div>
+</nav>

@@ -1,0 +1,13 @@
+# Disposable/temporary email domains to block during registration
+# Add more domains as needed
+domains:
+  - mailinator.com
+  - guerrillamail.com
+  - 10minutemail.com
+  - temp-mail.org
+  - yopmail.com
+  - throwaway.email
+  - maildrop.cc
+  - tempmail.com
+  - getnada.com
+  - trashmail.com

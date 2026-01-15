@@ -1,0 +1,20 @@
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <strong>Core App</strong>
+        <p class="footer-disclaimer">
+          A reusable Rails foundation for production-ready apps.
+        </p>
+      </div>
+      <div class="footer-meta">
+        <p>&copy; <%= Time.current.year %> Core App. All rights reserved.</p>
+        <nav class="footer-links">
+          <%= link_to 'Terms of Use', terms_path, class: 'footer-link' %> |
+          <%= link_to 'Privacy Policy', privacy_path, class: 'footer-link' %> |
+          <%= link_to 'Contact', contact_path, class: 'footer-link' %>
+        </nav>
+      </div>
+    </div>
+  </div>
+</footer>

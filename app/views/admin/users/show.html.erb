@@ -1,0 +1,151 @@
+<div class="user-detail">
+  <div class="admin-header">
+    <h1>User Details</h1>
+    <%= link_to '← Back to Users', admin_users_path, class: "btn btn-secondary" %>
+  </div>
+
+  <% if flash[:notice] %>
+    <div class="alert alert-success" style="margin-bottom: var(--space-lg);">
+      <%= flash[:notice] %>
+    </div>
+  <% end %>
+
+  <% if flash[:alert] %>
+    <div class="alert alert-danger" style="margin-bottom: var(--space-lg);">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+
+  <div class="user-info-card">
+    <h2>Account Information</h2>
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="info-label">User ID</span>
+        <span class="info-value">#<%= @user.id %></span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Email</span>
+        <span class="info-value"><%= @user.email %></span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Subscription Status</span>
+        <span class="info-value">
+          <span class="status-badge <%= @user.subscription_status %>">
+            <%= @user.subscription_status %>
+          </span>
+        </span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Trial Status</span>
+        <span class="info-value">
+          <% if @user.on_trial? %>
+            <span class="status-badge trialing">
+              Active (<%= ((@user.trial_ends_at - Time.current) / 1.day).round %> days left)
+            </span>
+          <% elsif @user.trial_expired? %>
+            <span class="status-badge expired">
+              Expired on <%= @user.trial_ends_at.strftime("%B %d, %Y") %>
+            </span>
+          <% else %>
+            <span class="status-badge neutral">N/A</span>
+          <% end %>
+        </span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Monthly Usage</span>
+        <span class="info-value">
+          <% if @user.free_access? %>
+            <span class="status-badge success">Unlimited (Free Access)</span>
+          <% else %>
+            <span class="status-badge neutral">Tracked</span>
+          <% end %>
+        </span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Account Flags</span>
+        <span class="info-value">
+          <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+            <% if @user.free_access? %>
+              <span class="flag-badge free">Free Access</span>
+            <% end %>
+            <% if @user.account_suspended? %>
+              <span class="flag-badge suspended">Suspended</span>
+            <% end %>
+            <% if @user.discount_percentage > 0 %>
+              <span class="flag-badge discount"><%= @user.discount_percentage %>% Discount</span>
+            <% end %>
+            <% unless @user.free_access? || @user.account_suspended? || @user.discount_percentage > 0 %>
+              <span style="color: var(--color-text-light);">None</span>
+            <% end %>
+          </div>
+        </span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Stripe Customer ID</span>
+        <span class="info-value"><%= @user.stripe_customer_id || 'N/A' %></span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Created At</span>
+        <span class="info-value"><%= @user.created_at.strftime("%B %d, %Y at %H:%M") %></span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Updated At</span>
+        <span class="info-value"><%= @user.updated_at.strftime("%B %d, %Y at %H:%M") %></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="user-info-card">
+    <h2>Admin Actions</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-lg); margin-top: var(--space-lg);">
+      <!-- Trial Extension -->
+      <div class="admin-action-card">
+        <h3 style="font-size: var(--font-size-lg); margin-bottom: var(--space-sm);">Extend Trial</h3>
+        <p style="color: var(--color-text-light); font-size: var(--font-size-sm); margin-bottom: var(--space-md);">
+          Add more days to user's trial period
+        </p>
+        <%= form_with url: extend_trial_admin_user_path(@user), method: :post, style: "display: flex; gap: var(--space-sm);" do |f| %>
+          <%= f.number_field :days, value: 7, min: 1, max: 365, class: "form-input", style: "width: 80px;" %>
+          <%= f.submit "Extend", class: "btn btn-primary btn-sm" %>
+        <% end %>
+      </div>
+
+      <!-- Toggle Free Access -->
+      <div class="admin-action-card">
+        <h3 style="font-size: var(--font-size-lg); margin-bottom: var(--space-sm);">Free Access</h3>
+        <p style="color: var(--color-text-light); font-size: var(--font-size-sm); margin-bottom: var(--space-md);">
+          Grant unlimited usage
+        </p>
+        <%= form_with url: toggle_free_access_admin_user_path(@user), method: :post do |f| %>
+          <%= f.submit @user.free_access? ? "Remove Free Access" : "Grant Free Access",
+              class: "btn #{@user.free_access? ? 'btn-secondary' : 'btn-primary'} btn-sm" %>
+        <% end %>
+      </div>
+
+      <!-- Account Suspension -->
+      <div class="admin-action-card">
+        <h3 style="font-size: var(--font-size-lg); margin-bottom: var(--space-sm);">Account Status</h3>
+        <p style="color: var(--color-text-light); font-size: var(--font-size-sm); margin-bottom: var(--space-md);">
+          Suspend or restore account access
+        </p>
+        <%= form_with url: toggle_suspension_admin_user_path(@user), method: :post do |f| %>
+          <%= f.submit @user.account_suspended? ? "Restore Account" : "Suspend Account",
+              class: "btn #{@user.account_suspended? ? 'btn-primary' : 'btn-danger'} btn-sm" %>
+        <% end %>
+      </div>
+
+      <!-- Discount -->
+      <div class="admin-action-card">
+        <h3 style="font-size: var(--font-size-lg); margin-bottom: var(--space-sm);">Discount</h3>
+        <p style="color: var(--color-text-light); font-size: var(--font-size-sm); margin-bottom: var(--space-md);">
+          Apply percentage discount
+        </p>
+        <%= form_with url: set_discount_admin_user_path(@user), method: :post, style: "display: flex; gap: var(--space-sm);" do |f| %>
+          <%= f.number_field :percentage, value: @user.discount_percentage, min: 0, max: 100, class: "form-input", style: "width: 80px;" %>
+          <%= f.submit "Set", class: "btn btn-primary btn-sm" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+</div>

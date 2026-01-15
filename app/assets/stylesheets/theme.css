@@ -1,0 +1,29 @@
+/* Theme color variables */
+:root {
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-primary-active: #3730a3;
+
+  --color-bg: #ffffff;
+  --color-bg-muted: #f9fafb;
+  --color-border: #e5e7eb;
+
+  --color-text: #111827;
+  --color-text-muted: #6b7280;
+
+  --color-success: #16a34a;
+  --color-warning: #f59e0b;
+  --color-danger: #dc2626;
+  --color-info: var(--color-primary);
+
+  --color-text-light: var(--color-text-muted);
+  --color-background: var(--color-bg);
+  --color-background-alt: var(--color-bg-muted);
+  --color-bg-secondary: var(--color-bg);
+  --color-secondary: var(--color-text);
+  --color-accent: var(--color-success);
+  --color-accent-hover: #15803d;
+  --color-primary-light: #eef2ff;
+  --color-danger-hover: #b91c1c;
+  --color-header-bg: #111827;
+}

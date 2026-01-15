@@ -1,0 +1,230 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+
+usage() {
+  cat <<'USAGE'
+Usage: bin/new_project [--force] [--dry-run]
+
+Environment variables (optional for non-interactive):
+  APP_NAME="My App" APP_SLUG=my_app MODULE_NAME=MyApp
+USAGE
+}
+
+force=false
+dry_run=false
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --force)
+      force=true
+      shift
+      ;;
+    --dry-run)
+      dry_run=true
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+cd "$ROOT_DIR"
+
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  if [[ -n "$(git status --porcelain)" ]] && [[ "$force" != "true" ]]; then
+    echo "Working tree is dirty. Commit or stash changes, or re-run with --force." >&2
+    exit 1
+  fi
+fi
+
+prompt_if_missing() {
+  local var_name="$1"
+  local prompt="$2"
+  local default_value="${3:-}"
+  local current_value="${!var_name:-}"
+
+  if [[ -n "$current_value" ]]; then
+    return 0
+  fi
+
+  if [[ -t 0 ]]; then
+    if [[ -n "$default_value" ]]; then
+      read -rp "$prompt [$default_value]: " current_value
+      current_value="${current_value:-$default_value}"
+    else
+      read -rp "$prompt: " current_value
+    fi
+    if [[ -n "$current_value" ]]; then
+      printf -v "$var_name" '%s' "$current_value"
+    fi
+    return 0
+    return 0
+  fi
+
+  if [[ -n "$default_value" ]]; then
+    printf -v "$var_name" '%s' "$default_value"
+    return 0
+  fi
+
+  echo "Missing $var_name. Provide it via environment variable or run interactively." >&2
+  exit 1
+}
+
+slug_from_name() {
+  ruby -e 'name=ARGV[0].to_s; slug=name.downcase.gsub(/[^a-z0-9]+/, "_").gsub(/^_+|_+$/, ""); puts slug' "$1"
+}
+
+module_from_slug() {
+  ruby -e 'slug=ARGV[0].to_s; puts slug.split("_").map { |part| part.capitalize }.join' "$1"
+}
+
+prompt_if_missing "APP_NAME" "APP_NAME (human)"
+
+if [[ -z "${APP_SLUG:-}" ]]; then
+  default_slug="$(slug_from_name "$APP_NAME")"
+  prompt_if_missing "APP_SLUG" "APP_SLUG (snake_case)" "$default_slug"
+fi
+
+if [[ -z "${MODULE_NAME:-}" ]]; then
+  default_module="$(module_from_slug "$APP_SLUG")"
+  prompt_if_missing "MODULE_NAME" "MODULE_NAME (CamelCase)" "$default_module"
+fi
+
+if [[ ! "$APP_SLUG" =~ ^[a-z][a-z0-9_]*$ ]]; then
+  echo "APP_SLUG must be snake_case (letters, numbers, underscores)." >&2
+  exit 1
+fi
+
+if [[ ! "$MODULE_NAME" =~ ^[A-Z][A-Za-z0-9]*$ ]]; then
+  echo "MODULE_NAME must be CamelCase (no separators)." >&2
+  exit 1
+fi
+
+current_module=$(ruby -e 'content=File.read("config/application.rb"); if content =~ /^module\s+([A-Za-z0-9_:]+)/ then puts $1 else exit 1 end')
+
+if [[ -z "$current_module" ]]; then
+  echo "Could not determine current module name from config/application.rb" >&2
+  exit 1
+fi
+
+file_contains() {
+  local needle="$1"
+  local file="$2"
+  if command -v rg >/dev/null 2>&1; then
+    rg -q --fixed-strings "$needle" "$file"
+  else
+    grep -qF "$needle" "$file"
+  fi
+}
+
+replace_in_file() {
+  local file="$1"
+  local old="$2"
+  local new="$3"
+
+  if [[ ! -f "$file" ]]; then
+    return 0
+  fi
+
+  if ! file_contains "$old" "$file"; then
+    return 0
+  fi
+
+  if [[ "$dry_run" == "true" ]]; then
+    echo "Would update $file"
+    return 0
+  fi
+
+  ruby -e 'path, old, new = ARGV; content = File.read(path, mode: "r:UTF-8"); content = content.gsub(old, new); File.write(path, content)' "$file" "$old" "$new"
+}
+
+update_database_config() {
+  local file="$1"
+
+  if [[ "$dry_run" == "true" ]]; then
+    echo "Would update $file database names"
+    return 0
+  fi
+
+  ruby -e '
+    path, slug = ARGV
+    lines = File.readlines(path)
+    section = nil
+    lines.map! do |line|
+      if line =~ /^(\w+):\s*$/
+        section = Regexp.last_match(1)
+      end
+      if %w[development test].include?(section) && line =~ /^(\s*database:\s*)(\S+)/
+        replacement = section == "development" ? "#{slug}_development" : "#{slug}_test"
+        line = "#{Regexp.last_match(1)}#{replacement}\n"
+      end
+      line
+    end
+    File.write(path, lines.join)
+  ' "$file" "$APP_SLUG"
+}
+
+update_readme_title() {
+  local file="$1"
+  if [[ "$dry_run" == "true" ]]; then
+    echo "Would update $file title"
+    return 0
+  fi
+
+  ruby -e '
+    path, app_name = ARGV
+    lines = File.readlines(path)
+    lines[0] = "# #{app_name}\n" if lines[0] && lines[0].start_with?("# ")
+    content = lines.join
+    content = content.gsub("Core App Template", app_name)
+    File.write(path, content)
+  ' "$file" "$APP_NAME"
+}
+
+replace_in_file "config/application.rb" "$current_module" "$MODULE_NAME"
+replace_in_file "config/environment.rb" "$current_module" "$MODULE_NAME"
+
+if [[ -d "config/initializers" ]]; then
+  for file in config/initializers/*.rb; do
+    [[ -f "$file" ]] || continue
+    replace_in_file "$file" "$current_module" "$MODULE_NAME"
+  done
+fi
+
+update_database_config "config/database.yml"
+
+update_readme_title "README.md"
+replace_in_file "app/views/layouts/application.html.erb" "Core App Template" "$APP_NAME"
+replace_in_file "app/views/pages/home.html.erb" "Core App Template" "$APP_NAME"
+
+if [[ "$dry_run" == "true" ]]; then
+  echo "Dry run complete. No files changed."
+  exit 0
+fi
+
+. "$ROOT_DIR/bin/bootstrap"
+
+bundle exec rails db:drop db:create db:migrate db:seed
+
+"$ROOT_DIR/bin/verify"
+
+seed_email=$(ruby -e 'content=File.read("db/seeds.rb", mode: "r:UTF-8"); if content =~ /email:\s*"([^"]+)"/ then puts $1 end')
+seed_password=$(ruby -e 'content=File.read("db/seeds.rb", mode: "r:UTF-8"); if content =~ /password\s*=\s*"([^"]+)"/ then puts $1 end')
+
+if [[ -n "$seed_email" && -n "$seed_password" ]]; then
+  echo "Seeded login: $seed_email / $seed_password"
+else
+  echo "Seeded login details: see db/seeds.rb"
+fi
+
+echo "Done. Run: bundle exec rails s"
+echo "URL: http://localhost:3000"

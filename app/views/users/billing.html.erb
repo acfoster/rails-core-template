@@ -1,0 +1,100 @@
+<%= render layout: "users/profile_layout" do %>
+  <div class="profile-header">
+    <h1>Billing History</h1>
+    <p>View and download your past invoices and receipts</p>
+  </div>
+
+  <% if @upcoming_invoice %>
+    <div class="card">
+      <h2>Upcoming Charge</h2>
+      <div style="padding: var(--space-lg); background: var(--color-background-alt); border-radius: var(--radius-md);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <p style="margin: 0 0 var(--space-xs) 0; color: var(--color-text-light); font-size: var(--font-size-sm);">
+              Next billing date
+            </p>
+            <h4 style="margin: 0;">
+              <%= Time.at(@upcoming_invoice.period_end).strftime("%B %-d, %Y") %>
+            </h4>
+          </div>
+          <div style="text-align: right;">
+            <p style="margin: 0 0 var(--space-xs) 0; color: var(--color-text-light); font-size: var(--font-size-sm);">
+              Amount due
+            </p>
+            <h4 style="margin: 0;">
+              $<%= sprintf("%.2f", @upcoming_invoice.amount_due / 100.0) %>
+            </h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="card">
+    <h2>Invoice History</h2>
+    <div style="border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead style="background: var(--color-background-alt); border-bottom: 2px solid var(--color-border);">
+          <tr>
+            <th style="text-align: left; padding: var(--space-md); font-size: var(--font-size-sm); text-transform: uppercase; font-weight: 600;">Date</th>
+            <th style="text-align: left; padding: var(--space-md); font-size: var(--font-size-sm); text-transform: uppercase; font-weight: 600;">Description</th>
+            <th style="text-align: right; padding: var(--space-md); font-size: var(--font-size-sm); text-transform: uppercase; font-weight: 600;">Amount</th>
+            <th style="text-align: center; padding: var(--space-md); font-size: var(--font-size-sm); text-transform: uppercase; font-weight: 600;">Status</th>
+            <th style="text-align: center; padding: var(--space-md); font-size: var(--font-size-sm); text-transform: uppercase; font-weight: 600;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @invoices&.any? %>
+            <% @invoices.each do |invoice| %>
+              <tr style="border-bottom: 1px solid var(--color-border);">
+                <td style="padding: var(--space-md);">
+                  <%= Time.at(invoice.created).strftime("%b %-d, %Y") %>
+                </td>
+                <td style="padding: var(--space-md);">
+                  <% if invoice.lines.data.first %>
+                    <%= invoice.lines.data.first.description %>
+                  <% else %>
+                    Subscription Payment
+                  <% end %>
+                </td>
+                <td style="text-align: right; padding: var(--space-md);">
+                  $<%= sprintf("%.2f", invoice.amount_paid / 100.0) %>
+                </td>
+                <td style="text-align: center; padding: var(--space-md);">
+                  <% if invoice.status == "paid" %>
+                    <span class="badge badge-success">Paid</span>
+                  <% elsif invoice.status == "open" %>
+                    <span class="badge badge-warning">Open</span>
+                  <% elsif invoice.status == "void" %>
+                    <span class="badge badge-secondary">Void</span>
+                  <% elsif invoice.status == "uncollectible" %>
+                    <span class="badge badge-danger">Uncollectible</span>
+                  <% else %>
+                    <span class="badge badge-secondary"><%= invoice.status.titleize %></span>
+                  <% end %>
+                </td>
+                <td style="text-align: center; padding: var(--space-md);">
+                  <% if invoice.invoice_pdf %>
+                    <%= link_to "Download PDF", invoice.invoice_pdf, class: "btn btn-sm btn-secondary", target: "_blank", rel: "noopener" %>
+                  <% else %>
+                    <span style="color: var(--color-text-light); font-size: var(--font-size-sm);">—</span>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="5" style="text-align: center; padding: var(--space-2xl); color: var(--color-text-light);">
+                <% if current_user.stripe_customer_id.blank? %>
+                  No billing history yet. Subscribe to see your invoices here.
+                <% else %>
+                  No invoices found. Your first invoice will appear here after your first payment.
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+. "$(dirname "$0")/bootstrap"
+
+bundle exec rails zeitwerk:check
+bundle exec rspec
+bundle exec rails test

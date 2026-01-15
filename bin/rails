@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+if Gem::Version.new(RUBY_VERSION) < Gem::Version.new("3.2")
+  warn "Use bin/bootstrap (or bin/verify) to set up Ruby via rbenv/docker."
+  exit 1
+end
+
+APP_PATH = File.expand_path("../config/application", __dir__)
+require_relative "../config/boot"
+require "rails/commands"

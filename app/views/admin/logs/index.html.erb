@@ -1,0 +1,131 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <div>
+      <h1>System Logs</h1>
+      <p>Search and filter application logs for debugging and monitoring</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: var(--space-lg);">
+    <%= form_with url: admin_logs_path, method: :get, local: true, class: "log-filters" do |f| %>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-md); margin-bottom: var(--space-md);">
+        <div>
+          <%= f.label :log_type, "Type", style: "display: block; margin-bottom: var(--space-xs); font-weight: 500;" %>
+          <%= f.select :log_type, options_for_select(@log_types.map { |type| [type.humanize, type] }, params[:log_type]), { include_blank: "All Types" }, class: "form-control" %>
+        </div>
+
+        <div>
+          <%= f.label :level, "Level", style: "display: block; margin-bottom: var(--space-xs); font-weight: 500;" %>
+          <%= f.select :level, options_for_select(@levels.map { |level| [level.titleize, level] }, params[:level]), { include_blank: "All Levels" }, class: "form-control" %>
+        </div>
+
+        <div>
+          <%= f.label :user_id, "User", style: "display: block; margin-bottom: var(--space-xs); font-weight: 500;" %>
+          <%= f.select :user_id, options_for_select(@users, params[:user_id]), { include_blank: "All Users" }, class: "form-control" %>
+        </div>
+
+        <div>
+          <%= f.label :since, "Time Range", style: "display: block; margin-bottom: var(--space-xs); font-weight: 500;" %>
+          <%= f.select :since, options_for_select([["Last 15 minutes", "15m"], ["Last Hour", "1h"], ["Last 6 Hours", "6h"], ["Last 24 Hours", "24h"], ["Last 3 Days", "3d"], ["Last 7 Days", "7d"], ["Last 30 Days", "30d"]], params[:since]), { include_blank: "All Time" }, class: "form-control" %>
+        </div>
+
+        <div>
+          <%= f.label :component, "Component", style: "display: block; margin-bottom: var(--space-xs); font-weight: 500;" %>
+          <%= f.select :component, options_for_select(@components.map { |comp| [comp.humanize, comp] }, params[:component]), { include_blank: "All Components" }, class: "form-control" %>
+        </div>
+
+        <div>
+          <%= f.label :error_type, "Error Type", style: "display: block; margin-bottom: var(--space-xs); font-weight: 500;" %>
+          <%= f.select :error_type, options_for_select(@error_types.map { |type| [type.humanize, type] }, params[:error_type]), { include_blank: "All Error Types" }, class: "form-control" %>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-md); margin-bottom: var(--space-md);">
+        <div>
+          <%= f.label :filter_action, "Action", style: "display: block; margin-bottom: var(--space-xs); font-weight: 500;" %>
+          <%= f.text_field :filter_action, placeholder: "Search action...", value: params[:filter_action], class: "form-control" %>
+        </div>
+
+        <div>
+          <%= f.label :filter_controller, "Controller", style: "display: block; margin-bottom: var(--space-xs); font-weight: 500;" %>
+          <%= f.text_field :filter_controller, placeholder: "Search controller...", value: params[:filter_controller], class: "form-control" %>
+        </div>
+
+        <div>
+          <%= f.label :query, "Message", style: "display: block; margin-bottom: var(--space-xs); font-weight: 500;" %>
+          <%= f.text_field :query, placeholder: "Search message...", value: params[:query], class: "form-control" %>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: var(--space-sm);">
+        <%= f.submit "Filter Logs", class: "btn btn-primary" %>
+        <%= link_to "Clear Filters", admin_logs_path, class: "btn btn-secondary" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="card">
+    <% if @logs.any? %>
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Level</th>
+              <th>Type</th>
+              <th>Message</th>
+              <th>User</th>
+              <th>Action</th>
+              <th>Controller</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @logs.each do |log| %>
+              <tr>
+                <td style="white-space: nowrap;">
+                  <%= log.occurred_at.strftime("%b %d, %Y %H:%M:%S") %>
+                </td>
+                <td>
+                  <span class="badge <%= log.level_badge_class %>">
+                    <%= log.level.upcase %>
+                  </span>
+                </td>
+                <td>
+                  <span class="badge <%= log.type_badge_class %>">
+                    <%= log.log_type.titleize %>
+                  </span>
+                </td>
+                <td style="max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                  <%= log.message %>
+                </td>
+                <td>
+                  <%= log.user&.email || "-" %>
+                </td>
+                <td>
+                  <%= log.action || "-" %>
+                </td>
+                <td>
+                  <%= log.controller || "-" %>
+                </td>
+                <td style="text-align: right;">
+                  <%= link_to "View", admin_log_path(log), class: "btn btn-sm btn-secondary" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: var(--space-lg); display: flex; justify-content: center;">
+        <%= paginate @logs %>
+      </div>
+    <% else %>
+      <div class="empty-state">
+        <div class="empty-state-icon">📋</div>
+        <h3>No Logs Found</h3>
+        <p>No logs match your current filters. Try adjusting your search criteria.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

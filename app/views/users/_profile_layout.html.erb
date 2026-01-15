@@ -1,0 +1,33 @@
+<div class="profile-container">
+  <div class="profile-sidebar">
+    <div class="profile-sidebar-header">
+      <h2>Profile Settings</h2>
+    </div>
+
+    <nav class="profile-nav">
+      <%= link_to profile_path, class: "profile-nav-item #{@active_tab == 'overview' ? 'active' : ''}" do %>
+        <span class="profile-nav-icon">👤</span>
+        <span>Overview</span>
+      <% end %>
+
+      <%= link_to profile_account_path, class: "profile-nav-item #{@active_tab == 'account' ? 'active' : ''}" do %>
+        <span class="profile-nav-icon">🔐</span>
+        <span>Account & Password</span>
+      <% end %>
+
+      <%= link_to profile_payment_path, class: "profile-nav-item #{@active_tab == 'payment' ? 'active' : ''}" do %>
+        <span class="profile-nav-icon">💳</span>
+        <span>Payment Methods</span>
+      <% end %>
+
+      <%= link_to profile_billing_path, class: "profile-nav-item #{@active_tab == 'billing' ? 'active' : ''}" do %>
+        <span class="profile-nav-icon">📄</span>
+        <span>Billing History</span>
+      <% end %>
+    </nav>
+  </div>
+
+  <div class="profile-content">
+    <%= yield %>
+  </div>
+</div>
