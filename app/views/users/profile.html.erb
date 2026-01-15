@@ -1,0 +1,51 @@
+<%= render layout: "users/profile_layout" do %>
+  <div class="profile-header">
+    <h1>Profile Overview</h1>
+    <p>Manage your account information and settings</p>
+  </div>
+
+  <div class="card">
+    <h2>Account Information</h2>
+
+    <div class="info-grid">
+      <div class="info-item">
+        <label class="info-label">Email</label>
+        <p class="info-value"><%= @user.email %></p>
+      </div>
+
+      <div class="info-item">
+        <label class="info-label">Member Since</label>
+        <p class="info-value"><%= @user.created_at.strftime('%B %d, %Y') %></p>
+      </div>
+
+      <div class="info-item">
+        <label class="info-label">Subscription Status</label>
+        <p class="info-value"><%= @user.subscription_status %></p>
+      </div>
+    </div>
+
+    <div style="margin-top: var(--space-xl);">
+      <%= link_to "Edit Account Settings", profile_account_path, class: "btn btn-primary" %>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Quick Stats</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">—</div>
+        <div class="stat-label">Activity</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-value">—</div>
+        <div class="stat-label">Usage</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-value">—</div>
+        <div class="stat-label">Last 30 Days</div>
+      </div>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,23 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h1 class="auth-title">Resend Confirmation Email</h1>
+    <p class="auth-subtitle">Didn't receive the confirmation email? We'll send it again.</p>
+
+    <%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post, class: "auth-form" }) do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <div class="form-group">
+        <%= f.label :email, class: "form-label" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email), class: "form-input", required: true %>
+      </div>
+
+      <div class="form-actions">
+        <%= f.submit "Resend Confirmation Email", class: "btn btn-primary btn-lg", style: "width: 100%;" %>
+      </div>
+    <% end %>
+
+    <div class="auth-links">
+      <%= render "devise/shared/links" %>
+    </div>
+  </div>
+</div>

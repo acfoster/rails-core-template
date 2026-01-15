@@ -1,0 +1,151 @@
+require 'cloudmersive-virus-scan-api-client'
+require 'cgi'
+
+class ImageVirusScanner
+  class ScanFailedError < StandardError; end
+  class VirusDetectedError < StandardError; end
+
+  def initialize(file_path)
+    @file_path = file_path
+  end
+
+  def call
+    # Skip virus scanning in development unless explicitly enabled
+    unless Rails.env.production? || ENV['ENABLE_VIRUS_SCAN'] == 'true'
+      Rails.logger.info("[VIRUS_SCAN] Skipping virus scan in #{Rails.env} environment")
+      return true
+    end
+
+    # Verify API key is configured
+    unless ENV['CLOUDMERSIVE_API_KEY'].present?
+      Rails.logger.error("[VIRUS_SCAN] CLOUDMERSIVE_API_KEY not configured")
+      Sentry.capture_message("Cloudmersive API key not configured")
+      raise ScanFailedError, "Virus scanning service not configured"
+    end
+
+    Sentry.add_breadcrumb(Sentry::Breadcrumb.new(
+      category: "virus_scan",
+      message: "Starting Cloudmersive virus scan",
+      data: {
+        file_path: @file_path,
+        file_exists: File.exist?(@file_path),
+        env: Rails.env,
+        enable_virus_scan: ENV['ENABLE_VIRUS_SCAN'],
+        api_key_present: ENV['CLOUDMERSIVE_API_KEY'].present?
+      }
+    ))
+
+    begin
+      # Create API instance
+      api_instance = CloudmersiveVirusScanApiClient::ScanApi.new
+
+      Rails.logger.info("[VIRUS_SCAN] API Configuration:")
+      Rails.logger.info("[VIRUS_SCAN]   Host: #{api_instance.api_client.config.host}")
+      Rails.logger.info("[VIRUS_SCAN]   Scheme: #{api_instance.api_client.config.scheme}")
+      Rails.logger.info("[VIRUS_SCAN]   Base URL: #{api_instance.api_client.config.base_url}")
+
+      # Open file for scanning
+      input_file = File.open(@file_path, 'rb')
+
+      Rails.logger.info("[VIRUS_SCAN] Scanning file: #{@file_path}")
+      Rails.logger.info("[VIRUS_SCAN] File size: #{File.size(@file_path)} bytes")
+      Rails.logger.info("[VIRUS_SCAN] File readable: #{File.readable?(@file_path)}")
+
+      # Call Cloudmersive API
+      result = api_instance.scan_file(input_file)
+
+      # Close file
+      input_file.close
+
+      Rails.logger.info("[VIRUS_SCAN] Scan result: CleanResult=#{result.clean_result}, VirusesFound=#{result.found_viruses&.count || 0}")
+
+      Sentry.add_breadcrumb(Sentry::Breadcrumb.new(
+        category: "virus_scan",
+        message: "Cloudmersive scan completed",
+        data: {
+          clean_result: result.clean_result,
+          viruses_found: result.found_viruses&.count || 0,
+          file_path: @file_path,
+          env: Rails.env
+        }
+      ))
+
+      # Check if file is clean
+      if result.clean_result == true
+        Rails.logger.info("[VIRUS_SCAN] File is clean")
+        true
+      else
+        # Virus detected
+        virus_names = result.found_viruses&.map(&:virus_name)&.join(", ") || "Unknown"
+        error_msg = "Virus detected: #{virus_names}"
+
+        Rails.logger.warn("[VIRUS_SCAN] #{error_msg}")
+
+        Sentry.add_breadcrumb(Sentry::Breadcrumb.new(
+          category: "virus_scan",
+          message: "Virus detected",
+          level: "warning",
+          data: {
+            virus_names: virus_names,
+            file_path: @file_path,
+            env: Rails.env
+          }
+        ))
+
+        raise VirusDetectedError, error_msg
+      end
+
+    rescue CloudmersiveVirusScanApiClient::ApiError => e
+      Rails.logger.error("[VIRUS_SCAN] Cloudmersive API error: #{e.message}")
+      Rails.logger.error("[VIRUS_SCAN] Response body: #{e.response_body}")
+
+      Sentry.capture_exception(e) do |scope|
+        scope.set_tags(
+          component: "virus_scanner",
+          error_type: "cloudmersive_api_error",
+          env: Rails.env,
+          enable_virus_scan: ENV['ENABLE_VIRUS_SCAN'],
+          api_key_present: ENV['CLOUDMERSIVE_API_KEY'].present?,
+          file_path: @file_path
+        )
+        scope.set_context("scan_details", {
+          file_path: @file_path,
+          file_exists: File.exist?(@file_path),
+          file_size: File.exist?(@file_path) ? File.size(@file_path) : nil,
+          response_code: e.code,
+          env: Rails.env,
+          enable_virus_scan: ENV['ENABLE_VIRUS_SCAN'],
+          api_key_present: ENV['CLOUDMERSIVE_API_KEY'].present?
+        })
+      end
+
+      raise ScanFailedError, "Virus scan failed: #{e.message}"
+
+    rescue StandardError => e
+      Rails.logger.error("[VIRUS_SCAN] Unexpected error: #{e.message}")
+
+      Sentry.capture_exception(e) do |scope|
+        scope.set_tags(
+          component: "virus_scanner",
+          error_type: "unexpected_error",
+          env: Rails.env,
+          enable_virus_scan: ENV['ENABLE_VIRUS_SCAN'],
+          api_key_present: ENV['CLOUDMERSIVE_API_KEY'].present?,
+          file_path: @file_path
+        )
+        scope.set_context("scan_details", {
+          file_path: @file_path,
+          file_exists: File.exist?(@file_path),
+          file_size: File.exist?(@file_path) ? File.size(@file_path) : nil,
+          env: Rails.env,
+          enable_virus_scan: ENV['ENABLE_VIRUS_SCAN'],
+          api_key_present: ENV['CLOUDMERSIVE_API_KEY'].present?
+        })
+      end
+
+      raise ScanFailedError, "Virus scan failed: #{e.message}"
+    ensure
+      input_file&.close rescue nil
+    end
+  end
+end

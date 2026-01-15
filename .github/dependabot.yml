@@ -1,0 +1,32 @@
+version: 2
+updates:
+- package-ecosystem: bundler
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 5
+  ignore:
+    # Ignore major version updates for critical gems that might have breaking changes
+    - dependency-name: "stripe"
+      update-types: ["version-update:semver-major"]
+    - dependency-name: "rails"
+      update-types: ["version-update:semver-major"]
+    - dependency-name: "ruby-openai" 
+      update-types: ["version-update:semver-major"]
+  groups:
+    test-gems:
+      patterns:
+        - "rspec*"
+        - "factory_bot*"
+        - "shoulda*"
+        - "capybara*"
+    development-gems:
+      patterns:
+        - "debug*"
+        - "web-console*"
+        - "listen*"
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 3

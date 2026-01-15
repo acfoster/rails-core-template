@@ -1,0 +1,74 @@
+<div class="admin-dashboard">
+  <div class="admin-header">
+    <h1>All Users</h1>
+  </div>
+
+  <div class="dashboard-section">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Email</th>
+          <th>Subscription</th>
+          <th>Trial</th>
+          <th>Usage</th>
+          <th>Flags</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr>
+            <td>#<%= user.id %></td>
+            <td><%= user.email %></td>
+            <td>
+              <span class="status-badge <%= user.subscription_status %>">
+                <%= user.subscription_status %>
+              </span>
+            </td>
+            <td>
+              <% if user.on_trial? %>
+                <span class="status-badge trialing">
+                  <%= ((user.trial_ends_at - Time.current) / 1.day).round %> days left
+                </span>
+              <% elsif user.trial_expired? %>
+                <span class="status-badge expired">Expired</span>
+              <% else %>
+                <span class="status-badge neutral">N/A</span>
+              <% end %>
+            </td>
+            <td>
+              <% if user.free_access? %>
+                <span class="status-badge success">Unlimited</span>
+              <% else %>
+                <span class="status-badge neutral">Tracked</span>
+              <% end %>
+            </td>
+            <td>
+              <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                <% if user.free_access? %>
+                  <span class="flag-badge free">Free</span>
+                <% end %>
+                <% if user.account_suspended? %>
+                  <span class="flag-badge suspended">Suspended</span>
+                <% end %>
+                <% if user.discount_percentage > 0 %>
+                  <span class="flag-badge discount"><%= user.discount_percentage %>% off</span>
+                <% end %>
+              </div>
+            </td>
+            <td><%= user.created_at.strftime("%Y-%m-%d") %></td>
+            <td><%= link_to 'Manage', admin_user_path(user), class: 'btn btn-sm btn-secondary' %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <% if @users.respond_to?(:current_page) %>
+      <div class="pagination">
+        <%= paginate @users %>
+      </div>
+    <% end %>
+  </div>
+</div>

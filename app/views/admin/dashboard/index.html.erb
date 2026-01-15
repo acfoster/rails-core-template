@@ -1,0 +1,75 @@
+<div class="admin-dashboard">
+  <div class="admin-header">
+    <h1>Admin Dashboard</h1>
+    <div style="margin-top: var(--space-md);">
+      <%= link_to "View All Users", admin_users_path, class: "btn btn-secondary" %>
+      <%= link_to "View System Logs", admin_logs_path, class: "btn btn-secondary", style: "margin-left: var(--space-sm);" %>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>Total Users</h3>
+      <p class="stat-number"><%= @total_users %></p>
+      <p class="stat-description">Registered accounts</p>
+    </div>
+
+    <div class="stat-card">
+      <h3>Active Subscriptions</h3>
+      <p class="stat-number"><%= @active_subscriptions %></p>
+      <p class="stat-description">Paying customers</p>
+    </div>
+
+    <div class="stat-card">
+      <h3>Trialing Users</h3>
+      <p class="stat-number"><%= @trialing_users %></p>
+      <p class="stat-description"><%= @trial_expired %> expired</p>
+    </div>
+
+    <div class="stat-card">
+      <h3>Free Access</h3>
+      <p class="stat-number"><%= @free_access_users %></p>
+      <p class="stat-description">Admin granted</p>
+    </div>
+
+    <div class="stat-card">
+      <h3>Suspended</h3>
+      <p class="stat-number"><%= @suspended_users %></p>
+      <p class="stat-description">Blocked accounts</p>
+    </div>
+
+    <div class="stat-card">
+      <h3>Trial Conversion</h3>
+      <p class="stat-number"><%= @trial_to_paid_conversion %>%</p>
+      <p class="stat-description">Trial → Paid</p>
+    </div>
+  </div>
+
+  <div class="dashboard-section">
+    <h2>Recent Users</h2>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Subscription Status</th>
+          <th>Created At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @recent_users.each do |user| %>
+          <tr>
+            <td><%= user.email %></td>
+            <td>
+              <span class="status-badge <%= user.subscription_status %>">
+                <%= user.subscription_status %>
+              </span>
+            </td>
+            <td><%= user.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+            <td><%= link_to 'View Details', admin_user_path(user) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

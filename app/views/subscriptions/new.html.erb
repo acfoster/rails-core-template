@@ -1,0 +1,87 @@
+<div class="auth-container" style="min-height: 100vh; padding: var(--space-2xl) var(--space-lg);">
+  <div class="auth-card" style="max-width: 600px;">
+    <% unless current_user.confirmed? %>
+      <div style="background-color: var(--color-warning-light, #FFF3CD); border: 1px solid var(--color-warning, #FFC107); border-radius: var(--radius-md); padding: var(--space-lg); margin-bottom: var(--space-xl); text-align: center;">
+        <div style="color: var(--color-warning-dark, #856404); font-weight: 600; margin-bottom: var(--space-sm);">
+          ⚠️ Email Confirmation Required
+        </div>
+        <p style="color: var(--color-warning-dark, #856404); margin-bottom: var(--space-md);">
+          Your email isn't confirmed yet. Confirm it to unlock subscriptions.
+        </p>
+        <%= link_to "Resend confirmation email", new_user_confirmation_path, class: "btn btn-sm", style: "background-color: var(--color-warning); color: white; text-decoration: none; display: inline-block;" %>
+      </div>
+    <% end %>
+
+    <div style="text-align: center; margin-bottom: var(--space-2xl);">
+      <h1 class="auth-title">Subscribe to Core App Template</h1>
+      <% if current_user.trial_expired? %>
+        <p class="auth-subtitle" style="color: var(--color-text);">
+          Your trial has ended. Subscribe to continue using the app.
+        </p>
+      <% else %>
+        <p class="auth-subtitle" style="color: var(--color-text);">
+          Choose a plan and continue building.
+        </p>
+      <% end %>
+    </div>
+
+    <div class="card" style="border: 2px solid var(--color-primary); box-shadow: var(--shadow-lg);">
+      <div style="text-align: center; padding: var(--space-xl);">
+        <div style="font-size: var(--font-size-3xl); font-weight: 700; color: var(--color-primary); margin-bottom: var(--space-sm);">
+          $5<span style="font-size: var(--font-size-lg); font-weight: 400; color: var(--color-text-light);">/month</span>
+        </div>
+        <p style="color: var(--color-text-light); margin-bottom: var(--space-2xl);">
+          Simple, transparent pricing
+        </p>
+
+        <div style="text-align: left; margin-bottom: var(--space-2xl);">
+          <div style="display: flex; align-items: flex-start; gap: var(--space-md); margin-bottom: var(--space-md);">
+            <div style="color: var(--color-success); font-size: var(--font-size-xl);">✓</div>
+            <div>
+              <strong>Subscription management</strong>
+              <p style="color: var(--color-text-light); font-size: var(--font-size-sm); margin: var(--space-xs) 0 0 0;">
+                Stripe checkout, webhooks, and billing portal support.
+              </p>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: flex-start; gap: var(--space-md); margin-bottom: var(--space-md);">
+            <div style="color: var(--color-success); font-size: var(--font-size-xl);">✓</div>
+            <div>
+              <strong>Admin tooling</strong>
+              <p style="color: var(--color-text-light); font-size: var(--font-size-sm); margin: var(--space-xs) 0 0 0;">
+                Manage users, logs, and account flags.
+              </p>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: flex-start; gap: var(--space-md);">
+            <div style="color: var(--color-success); font-size: var(--font-size-xl);">✓</div>
+            <div>
+              <strong>Infrastructure ready</strong>
+              <p style="color: var(--color-text-light); font-size: var(--font-size-sm); margin: var(--space-xs) 0 0 0;">
+                Railway deployment, Docker, background jobs, and logging included.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <%= form_with url: subscription_path, method: :post, data: { turbo: false } do |f| %>
+          <%= f.submit "Subscribe Now", class: "btn btn-primary btn-lg", style: "width: 100%;" %>
+        <% end %>
+
+        <p style="color: var(--color-text-light); font-size: var(--font-size-sm); margin-top: var(--space-lg);">
+          Cancel anytime through your billing portal. No hidden fees.
+        </p>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: var(--space-xl);">
+      <p style="color: var(--color-text-light); font-size: var(--font-size-sm); margin-bottom: var(--space-md);">
+        Build on this template to launch your product faster.
+      </p>
+
+      <%= link_to "Return to Dashboard", dashboard_path, class: "btn btn-secondary" %>
+    </div>
+  </div>
+</div>

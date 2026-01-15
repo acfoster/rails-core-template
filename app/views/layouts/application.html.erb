@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Core App Template" %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag "tailwind", "application", "mobile", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <%= Sentry.get_trace_propagation_meta.html_safe %>
+  </head>
+
+  <body>
+    <%= render 'shared/header' %>
+    <%= render 'shared/flash' %>
+
+    <% if user_signed_in? && !current_user.confirmed? %>
+      <div style="background-color: var(--color-warning-light, #FFF3CD); border-bottom: 1px solid var(--color-warning, #FFC107); padding: var(--space-md); text-align: center;">
+        <span style="color: var(--color-warning-dark, #856404); font-weight: 500;">
+          ⚠️ Your email isn't confirmed yet. Confirm it to unlock subscriptions.
+        </span>
+        <%= link_to "Resend confirmation email", new_user_confirmation_path, style: "color: var(--color-warning-dark, #856404); text-decoration: underline; margin-left: var(--space-md);" %>
+      </div>
+    <% end %>
+
+    <main class="main-content">
+      <%= yield %>
+    </main>
+    <%= render 'shared/footer' %>
+  </body>
+</html>

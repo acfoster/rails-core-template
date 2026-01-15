@@ -1,0 +1,43 @@
+#!/bin/bash -e
+
+echo "[STARTUP] ClamAV disabled - using Cloudmersive API for virus scanning"
+
+# Run database setup as root (before switching to rails user)
+echo "[STARTUP] Running database migrations and setup..."
+cd /rails
+bundle exec rails db:migrate 2>&1 | head -20
+
+echo "[STARTUP] Loading Solid Cache schema if needed..."
+bundle exec rails runner "
+  begin
+    ActiveRecord::Base.connection.execute('SELECT 1 FROM solid_cache_entries LIMIT 1')
+    puts '[STARTUP] Solid Cache tables already exist'
+  rescue ActiveRecord::StatementInvalid
+    puts '[STARTUP] Loading Solid Cache schema...'
+    load(Rails.root.join('db/cache_schema.rb'))
+    puts '[STARTUP] Solid Cache schema loaded successfully'
+  end
+" 2>&1
+
+echo "[STARTUP] Loading Solid Queue schema if needed..."
+bundle exec rails runner "
+  begin
+    ActiveRecord::Base.connection.execute('SELECT 1 FROM solid_queue_processes LIMIT 1')
+    puts '[STARTUP] Solid Queue tables already exist'
+  rescue ActiveRecord::StatementInvalid
+    puts '[STARTUP] Loading Solid Queue schema...'
+    load(Rails.root.join('db/queue_schema.rb'))
+    puts '[STARTUP] Solid Queue schema loaded successfully'
+  end
+" 2>&1
+
+echo "[STARTUP] Cleaning up invalid jobs..."
+bundle exec rails jobs:cleanup_invalid 2>&1 || echo "[STARTUP] Job cleanup skipped (non-critical)"
+
+echo "[STARTUP] Running release tasks..."
+bundle exec rails runner "ReleaseTaskRunner.run" 2>&1 || echo "[STARTUP] Release tasks skipped (non-critical)"
+
+echo "[STARTUP] Database setup complete, starting application..."
+
+# Now run the original entrypoint as rails user
+exec gosu rails /rails/bin/docker-entrypoint "$@"

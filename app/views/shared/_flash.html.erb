@@ -1,0 +1,14 @@
+<% if flash.any? %>
+  <div class="flash-container">
+    <% flash.each do |type, message| %>
+      <% css_class = case type.to_s
+        when 'notice', 'success' then 'flash-success'
+        when 'alert', 'error' then 'flash-error'
+        else 'flash-info'
+      end %>
+      <div class="flash-message <%= css_class %>" role="alert">
+        <%= message.html_safe %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

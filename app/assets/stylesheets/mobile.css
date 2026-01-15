@@ -1,0 +1,666 @@
+/* ========================================
+   Mobile & Tablet Responsive Improvements
+   ======================================== */
+
+/* iOS Safe Area Support */
+:root {
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
+  --safe-area-inset-left: env(safe-area-inset-left);
+  --safe-area-inset-right: env(safe-area-inset-right);
+}
+
+/* Prevent horizontal scroll on mobile */
+html, body {
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  /* Better font rendering on iOS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Prevent text size adjustment on orientation change */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Mobile Viewport Meta Improvements */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+}
+
+/* ========================================
+   Mobile Typography Improvements
+   ======================================== */
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.75rem;
+    line-height: 1.3;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    line-height: 1.3;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    line-height: 1.4;
+  }
+
+  /* Better paragraph spacing on mobile */
+  p {
+    line-height: 1.7;
+  }
+}
+
+/* ========================================
+   Touch-Friendly Interactions
+   ======================================== */
+
+/* Larger touch targets for mobile */
+@media (max-width: 768px) {
+  .btn,
+  button,
+  input[type="submit"],
+  input[type="button"],
+  a.btn {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 0.875rem 1.25rem;
+  }
+
+  .btn-sm {
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Increase link tap areas */
+  a {
+    padding: 0.25rem 0;
+    display: inline-block;
+  }
+
+  /* Better form inputs on mobile */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="date"],
+  input[type="time"],
+  textarea,
+  select {
+    min-height: 48px;
+    font-size: 16px; /* Prevents iOS zoom on focus */
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  /* Prevent zoom on inputs for iPad */
+  select,
+  textarea,
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="date"],
+  input[type="time"] {
+    font-size: max(16px, 1em); /* Prevents zoom while allowing relative sizing */
+  }
+}
+
+/* ========================================
+   Header Mobile Improvements
+   ======================================== */
+
+@media (max-width: 768px) {
+  .site-header {
+    padding-left: var(--safe-area-inset-left);
+    padding-right: var(--safe-area-inset-right);
+    height: auto;
+    min-height: var(--header-height);
+  }
+
+  .header-content {
+    padding: var(--space-xs) var(--space-md);
+    min-height: var(--header-height);
+  }
+
+  .header-logo {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+  }
+
+  .logo-image {
+    height: 52px !important;
+    width: auto !important;
+    max-width: 320px;
+  }
+
+  .logo-text {
+    font-size: var(--font-size-lg);
+  }
+
+  /* Mobile menu improvements */
+  .header-nav {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .nav-link {
+    font-size: var(--font-size-base);
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* ========================================
+   Main Content Mobile Padding
+   ======================================== */
+
+@media (max-width: 768px) {
+  main {
+    padding-bottom: var(--safe-area-inset-bottom);
+  }
+
+  .container {
+    padding-left: max(var(--space-md), env(safe-area-inset-left));
+    padding-right: max(var(--space-md), env(safe-area-inset-right));
+  }
+
+  .dashboard-container {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+}
+
+/* ========================================
+   Cards Mobile Improvements
+   ======================================== */
+
+@media (max-width: 768px) {
+  .card {
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+    border-radius: var(--radius-lg);
+    /* Prevent cards from being too wide */
+    max-width: 100%;
+  }
+
+  .card h2 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--space-md);
+  }
+
+  /* Ensure card content doesn't overflow */
+  .card-header,
+  .card-body,
+  .card-footer {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ========================================
+   Form Mobile Improvements
+   ======================================== */
+
+@media (max-width: 768px) {
+  .form-group {
+    margin-bottom: var(--space-md);
+  }
+
+  /* Stack form grid on mobile */
+  div[style*="grid-template-columns"] {
+    display: block !important;
+  }
+
+  div[style*="grid-template-columns"] > * {
+    margin-bottom: var(--space-md);
+  }
+
+  /* Better file input on mobile */
+  .file-input-label {
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--space-md);
+    text-align: center;
+  }
+
+  .file-input-button {
+    width: 100%;
+    padding: var(--space-md);
+    margin-bottom: var(--space-sm);
+  }
+
+  .file-input-text {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Form actions stack on mobile */
+  .form-actions {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+}
+
+/* ========================================
+   Profile Pages Mobile
+   ======================================== */
+
+@media (max-width: 768px) {
+  .profile-container {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    padding: var(--space-md);
+  }
+
+  .profile-sidebar {
+    position: static;
+    margin-bottom: var(--space-md);
+  }
+
+  .profile-header h1 {
+    font-size: var(--font-size-2xl);
+  }
+
+  /* Horizontal scroll for profile nav on smallest screens */
+  .profile-nav {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: var(--space-xs);
+    padding-bottom: var(--space-sm);
+  }
+
+  .profile-nav-item {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
+/* ========================================
+   Tables Mobile Improvements
+   ======================================== */
+
+@media (max-width: 768px) {
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-md);
+  }
+
+  .admin-table {
+    min-width: 600px; /* Prevent table from being too squished */
+    font-size: var(--font-size-xs);
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: var(--space-sm);
+    white-space: nowrap;
+  }
+  .feature-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+}
+
+/* ========================================
+   Info Banner Mobile
+   ======================================== */
+
+@media (max-width: 768px) {
+  .info-banner,
+  .warning-banner {
+    flex-direction: column;
+    padding: var(--space-md);
+    text-align: center;
+  }
+
+  .info-banner-icon {
+    font-size: 2rem;
+  }
+
+}
+
+/* ========================================
+   Badges Mobile
+   ======================================== */
+
+@media (max-width: 768px) {
+  .badge {
+    font-size: 0.65rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .badge-lg {
+    font-size: var(--font-size-xs);
+    padding: var(--space-xs) var(--space-sm);
+  }
+}
+
+/* ========================================
+   Flash Messages Mobile
+   ======================================== */
+
+@media (max-width: 768px) {
+  .flash-container {
+    top: calc(var(--header-height) + var(--space-sm));
+    width: calc(100% - var(--space-md) * 2);
+    max-width: 100%;
+  }
+
+  .flash-message {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .flash-message p {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* ========================================
+   Modal/Overlay Mobile
+   ======================================== */
+
+@media (max-width: 768px) {
+  #processing-overlay {
+    padding: var(--space-lg);
+  }
+
+  #processing-overlay h3 {
+    font-size: var(--font-size-lg);
+    text-align: center;
+  }
+
+  #processing-overlay p {
+    font-size: var(--font-size-sm);
+    padding: 0 var(--space-md);
+  }
+}
+
+/* ========================================
+   Auth Pages Mobile
+   ======================================== */
+
+@media (max-width: 640px) {
+  .auth-container {
+    padding: var(--space-md);
+    min-height: calc(100vh - var(--header-height) - 100px);
+  }
+
+  .auth-card {
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-md);
+  }
+
+  .auth-title {
+    font-size: var(--font-size-xl);
+  }
+
+  .auth-subtitle {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* ========================================
+   Landing Page Mobile
+   ======================================== */
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: var(--space-xl) var(--space-md);
+    min-height: auto;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+    line-height: 1.2;
+  }
+
+  .hero-subtitle {
+    font-size: var(--font-size-lg);
+  }
+
+  .hero-description {
+    font-size: var(--font-size-base);
+    padding: 0 var(--space-sm);
+  }
+
+  .hero-cta {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-cta .btn {
+    width: 100%;
+  }
+}
+
+/* ========================================
+   Stat Cards Mobile
+   ======================================== */
+
+@media (max-width: 768px) {
+  .stats-grid,
+  .info-grid,
+  .metadata-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .stat-value,
+  .score-value-large {
+    font-size: 2rem;
+  }
+
+  .stat-card {
+    padding: var(--space-md);
+  }
+}
+
+/* ========================================
+   Footer Mobile
+   ======================================== */
+
+@media (max-width: 640px) {
+  .site-footer {
+    padding: var(--space-xl) var(--space-md) var(--space-lg);
+    padding-bottom: max(var(--space-lg), env(safe-area-inset-bottom));
+  }
+
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-md);
+  }
+
+  .footer-meta {
+    text-align: center;
+  }
+}
+
+/* ========================================
+   Admin Pages Mobile
+   ======================================== */
+
+@media (max-width: 768px) {
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+  }
+
+  .admin-sidebar ul {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-sidebar li {
+    margin-bottom: 0;
+    margin-right: var(--space-xs);
+  }
+
+  .admin-sidebar a {
+    white-space: nowrap;
+  }
+
+  .admin-main-content {
+    padding: var(--space-md);
+  }
+
+  .admin-actions {
+    flex-direction: column;
+  }
+}
+
+/* ========================================
+   iPad Specific Improvements
+   ======================================== */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Tablet optimizations */
+  .profile-container {
+    grid-template-columns: 240px 1fr;
+  }
+
+  .card {
+    padding: var(--space-xl);
+  }
+
+  .stats-grid,
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ========================================
+   Landscape Mobile Improvements
+   ======================================== */
+
+@media (max-width: 896px) and (orientation: landscape) {
+  .hero-section {
+    min-height: auto;
+    padding: var(--space-lg) 0;
+  }
+
+  .auth-container {
+    min-height: auto;
+    padding: var(--space-md) 0;
+  }
+
+  /* Reduce vertical padding in landscape */
+  .card,
+  .dashboard-container {
+    padding-top: var(--space-md);
+    padding-bottom: var(--space-md);
+  }
+}
+
+/* ========================================
+   Prevent Zoom/Pan Issues
+   ======================================== */
+
+/* Disable double-tap zoom on buttons and interactive elements */
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+/* Prevent pull-to-refresh on iOS when scrolling */
+body {
+  overscroll-behavior-y: contain;
+}
+
+/* ========================================
+   Image Responsiveness
+   ======================================== */
+
+@media (max-width: 768px) {
+  img,
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+  }
+}
+
+/* ========================================
+   Improved Scrolling
+   ======================================== */
+
+/* Smooth scrolling on supported devices */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* ========================================
+   Dark Mode Support (iOS/iPadOS)
+   ======================================== */
+
+@media (prefers-color-scheme: dark) {
+  /* Add dark mode support if needed in future */
+}
+
+/* ========================================
+   Accessibility Improvements
+   ======================================== */
+
+/* Better focus indicators on mobile */
+@media (max-width: 768px) {
+  *:focus {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  button:focus,
+  a:focus {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* ========================================
+   Performance Optimizations
+   ======================================== */
+
+/* Hardware acceleration for smoother animations */
+.btn,
+.card,
+.badge,
+.nav-link,
+.profile-nav-item {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
+}

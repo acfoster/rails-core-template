@@ -1,0 +1,40 @@
+<header class="site-header">
+  <div class="container">
+    <div class="header-content">
+      <div class="header-logo">
+        <%= link_to root_path, class: "logo-link" do %>
+          <img src="/logo.png" alt="Core App Template" class="logo-image" style="height: 60px; width: auto;" />
+        <% end %>
+      </div>
+
+      <button class="mobile-menu-toggle" aria-label="Toggle menu" id="mobileMenuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="header-nav" id="headerNav">
+        <% if user_signed_in? %>
+          <% if current_user.admin? %>
+            <%= link_to "Admin Dashboard", admin_root_path, class: "nav-link" %>
+            <%= link_to "Users", admin_users_path, class: "nav-link" %>
+          <% else %>
+            <%= link_to "Dashboard", dashboard_path, class: "nav-link" %>
+            <%= link_to "Subscription", new_subscription_path, class: "nav-link" %>
+            <%= link_to "Billing", profile_billing_path, class: "nav-link" %>
+            <%= link_to "Profile", profile_path, class: "nav-link" %>
+            <% if current_user.on_trial? %>
+              <span class="nav-link" style="color: var(--color-text-light); font-size: var(--font-size-sm);">
+                Trial ends <%= time_ago_in_words(current_user.trial_ends_at) %>
+              </span>
+            <% end %>
+          <% end %>
+          <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "btn btn-secondary btn-sm" %>
+        <% else %>
+          <%= link_to "Login", new_user_session_path, class: "nav-link" %>
+          <%= link_to "Sign Up", new_user_registration_path, class: "btn btn-primary btn-sm" %>
+        <% end %>
+      </nav>
+    </div>
+  </div>
+</header>

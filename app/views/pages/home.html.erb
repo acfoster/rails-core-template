@@ -1,0 +1,42 @@
+<div class="hero-section">
+  <div class="container container-narrow">
+    <div class="hero-content">
+      <h1 class="hero-title">Core App Template</h1>
+      <p class="hero-subtitle">Production-ready Rails foundation</p>
+      <p class="hero-description">
+        Launch faster with authentication, billing, admin tooling, and deployment-ready infrastructure.
+      </p>
+
+      <div class="warning-banner">
+        <strong>Note:</strong> This is a reusable starter. Add your own feature modules to ship your product.
+      </div>
+
+      <div class="hero-cta">
+        <%= link_to "Sign Up", new_user_registration_path, class: "btn btn-primary btn-lg" %>
+        <%= link_to "Sign In", new_user_session_path, class: "btn btn-secondary btn-lg" %>
+      </div>
+
+      <div class="pricing-info">
+        <p>Subscription-ready billing via Stripe • Cancel anytime</p>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🔐</div>
+          <h3>Authentication</h3>
+          <p>Devise-powered sign up, sign in, and account management.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💳</div>
+          <h3>Billing</h3>
+          <p>Stripe checkout and webhooks built in for subscription workflows.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🧰</div>
+          <h3>Admin Tools</h3>
+          <p>Manage users, logs, and system health in one place.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

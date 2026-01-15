@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin | Core App Template</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag 'application', media: 'all' %>
+  <%= javascript_include_tag 'application' %>
+</head>
+<body>
+  <% if user_signed_in? && current_user.admin? %>
+    <div class="admin-layout">
+      <%= render 'layouts/admin_sidebar' %>
+      <main class="admin-main-content">
+        <% if flash[:notice] %>
+          <div class="alert alert-success"><%= flash[:notice] %></div>
+        <% end %>
+        <% if flash[:alert] %>
+          <div class="alert alert-danger"><%= flash[:alert] %></div>
+        <% end %>
+        <%= yield %>
+      </main>
+    </div>
+  <% else %>
+    <%= yield %>
+  <% end %>
+</body>
+</html>
