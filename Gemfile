@@ -33,8 +33,8 @@ gem "ruby-openai", "~> 7.0"
 gem "anthropic", "~> 0.3.0"
 
 # Error tracking
-gem "sentry-ruby", "~> 5.18"
-gem "sentry-rails", "~> 5.18"
+gem "sentry-ruby", "~> 6.3"
+gem "sentry-rails", "~> 6.3"
 
 # Image processing for ActiveStorage
 gem "image_processing", "~> 1.2"
