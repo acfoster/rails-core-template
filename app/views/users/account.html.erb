@@ -37,7 +37,7 @@
   <div class="card">
     <h2>Change Password</h2>
     <p class="field-hint" style="margin-bottom: var(--space-lg);">
-      Choose a strong password with at least 6 characters.
+      Use 16+ characters, or 12+ with upper, lower, number, and symbol.
     </p>
 
     <%= form_with model: @user, url: user_registration_path, method: :patch, id: "password-form" do |f| %>
@@ -48,7 +48,8 @@
 
       <div class="form-group">
         <%= f.label :password, "New Password", class: "form-label" %>
-        <%= f.password_field :password, class: "form-input", autocomplete: "new-password", placeholder: "At least 6 characters", required: true, minlength: 6, id: "password-new" %>
+        <%= f.password_field :password, class: "form-input", autocomplete: "new-password", placeholder: "16+ characters (or 12+ with mixed types)", required: true, minlength: 12, id: "password-new" %>
+        <span class="field-hint">Use 16+ characters, or 12+ with upper, lower, number, and symbol.</span>
         <span class="field-error" id="password-error" style="display: none;"></span>
       </div>
 
@@ -236,15 +237,21 @@
 
       function validatePassword() {
         const password = passwordNew.value;
+        const categoryCount = [
+          /[a-z]/.test(password),
+          /[A-Z]/.test(password),
+          /\d/.test(password),
+          /[^A-Za-z0-9]/.test(password)
+        ].filter(Boolean).length;
 
         if (password.length === 0) {
           passwordNew.classList.remove('valid', 'invalid');
           passwordError.style.display = 'none';
           return false;
-        } else if (password.length < 6) {
+        } else if (!(password.length >= 16 || (password.length >= 12 && categoryCount >= 3))) {
           passwordNew.classList.add('invalid');
           passwordNew.classList.remove('valid');
-          passwordError.textContent = 'Password must be at least 6 characters';
+          passwordError.textContent = 'Password must be 16+ characters, or 12+ with upper, lower, number, and symbol';
           passwordError.style.display = 'block';
           return false;
         } else {

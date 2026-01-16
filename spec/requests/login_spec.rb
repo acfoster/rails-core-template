@@ -1,10 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe 'User login', type: :request do
-  let(:user) { FactoryBot.create(:user, password: 'password123', password_confirmation: 'password123') }
+  let(:user) { FactoryBot.create(:user, password: 'Password123!', password_confirmation: 'Password123!') }
 
   it 'logs in with valid credentials and sets session' do
-    post user_session_path, params: { user: { email: user.email, password: 'password123' } }
+    post user_session_path, params: { user: { email: user.email, password: 'Password123!' } }
     expect(response).to redirect_to(dashboard_path)
     expect(controller.current_user).to eq(user)
   end

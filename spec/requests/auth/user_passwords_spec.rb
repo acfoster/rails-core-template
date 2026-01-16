@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "User Passwords", type: :request do
-  let!(:user) { create(:user, password: "oldpassword123", password_confirmation: "oldpassword123") }
+  let!(:user) { create(:user, password: "oldPassword123!", password_confirmation: "oldPassword123!") }
 
   describe "GET /users/password/new" do
     it "returns http success" do
@@ -189,8 +189,8 @@ RSpec.describe "User Passwords", type: :request do
         {
           user: {
             reset_password_token: reset_token,
-            password: "newpassword123",
-            password_confirmation: "newpassword123"
+            password: "newPassword123!",
+            password_confirmation: "newPassword123!"
           }
         }
       end
@@ -198,8 +198,8 @@ RSpec.describe "User Passwords", type: :request do
       it "changes the password" do
         put user_password_path, params: valid_params
         user.reload
-        expect(user.valid_password?("newpassword123")).to be true
-        expect(user.valid_password?("oldpassword123")).to be false
+        expect(user.valid_password?("newPassword123!")).to be true
+        expect(user.valid_password?("oldPassword123!")).to be false
       end
 
       it "clears the reset password token" do
@@ -235,12 +235,12 @@ RSpec.describe "User Passwords", type: :request do
         put user_password_path, params: {
           user: {
             reset_password_token: reset_token,
-            password: "newpassword123",
+            password: "newPassword123!",
             password_confirmation: "different123"
           }
         }
         user.reload
-        expect(user.valid_password?("oldpassword123")).to be true
+        expect(user.valid_password?("oldPassword123!")).to be true
       end
 
       it "does not change password with too short password" do
@@ -252,7 +252,7 @@ RSpec.describe "User Passwords", type: :request do
           }
         }
         user.reload
-        expect(user.valid_password?("oldpassword123")).to be true
+        expect(user.valid_password?("oldPassword123!")).to be true
       end
 
       it "shows error for blank password" do
@@ -270,12 +270,12 @@ RSpec.describe "User Passwords", type: :request do
         put user_password_path, params: {
           user: {
             reset_password_token: "invalid_token",
-            password: "newpassword123",
-            password_confirmation: "newpassword123"
+            password: "newPassword123!",
+            password_confirmation: "newPassword123!"
           }
         }
         user.reload
-        expect(user.valid_password?("oldpassword123")).to be true
+        expect(user.valid_password?("oldPassword123!")).to be true
       end
 
       it "does not change password with expired token" do
@@ -287,12 +287,12 @@ RSpec.describe "User Passwords", type: :request do
           put user_password_path, params: {
             user: {
               reset_password_token: token,
-              password: "newpassword123",
-              password_confirmation: "newpassword123"
+              password: "newPassword123!",
+              password_confirmation: "newPassword123!"
             }
           }
           user.reload
-          expect(user.valid_password?("oldpassword123")).to be true
+          expect(user.valid_password?("oldPassword123!")).to be true
         end
       end
     end
@@ -302,8 +302,8 @@ RSpec.describe "User Passwords", type: :request do
         valid_params = {
           user: {
             reset_password_token: reset_token,
-            password: "newpassword123",
-            password_confirmation: "newpassword123"
+            password: "newPassword123!",
+            password_confirmation: "newPassword123!"
           }
         }
 
@@ -317,7 +317,7 @@ RSpec.describe "User Passwords", type: :request do
         # Second use - should fail with unprocessable content
         put user_password_path, params: valid_params
         user.reload
-        expect(user.valid_password?("newpassword123")).to be true
+        expect(user.valid_password?("newPassword123!")).to be true
         expect(response).to have_http_status(:unprocessable_content)
       end
 
@@ -328,20 +328,20 @@ RSpec.describe "User Passwords", type: :request do
         put user_password_path, params: {
           user: {
             reset_password_token: user.reset_password_token,
-            password: "newpassword123",
-            password_confirmation: "newpassword123"
+            password: "newPassword123!",
+            password_confirmation: "newPassword123!"
           }
         }
 
         user.reload
-        expect(user.valid_password?("oldpassword123")).to be true
+        expect(user.valid_password?("oldPassword123!")).to be true
       end
     end
   end
 
   describe "edge cases" do
     it "handles email with different case" do
-      user = create(:user, email: "edgecase@example.com", password: "oldpassword123", password_confirmation: "oldpassword123")
+      user = create(:user, email: "edgecase@example.com", password: "oldPassword123!", password_confirmation: "oldPassword123!")
       expect {
         post user_password_path, params: {
           user: {
@@ -352,7 +352,7 @@ RSpec.describe "User Passwords", type: :request do
     end
 
     it "handles email with whitespace" do
-      user = create(:user, email: "whitespace2@example.com", password: "oldpassword123", password_confirmation: "oldpassword123")
+      user = create(:user, email: "whitespace2@example.com", password: "oldPassword123!", password_confirmation: "oldPassword123!")
       expect {
         post user_password_path, params: {
           user: {
@@ -387,8 +387,8 @@ RSpec.describe "User Passwords", type: :request do
       put user_password_path, params: {
         user: {
           reset_password_token: reset_token,
-          password: "newpassword123",
-          password_confirmation: "newpassword123"
+          password: "newPassword123!",
+          password_confirmation: "newPassword123!"
         }
       }
 

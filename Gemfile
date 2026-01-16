@@ -19,6 +19,7 @@ gem "tailwindcss-rails"
 
 # Authentication
 gem "devise", "~> 4.9"
+gem "devise-pwned_password", "~> 0.1"
 
 # Email delivery via Resend
 gem "resend", "~> 0.11"

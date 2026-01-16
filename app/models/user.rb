@@ -2,7 +2,8 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :confirmable
+         :recoverable, :rememberable, :validatable, :confirmable,
+         :pwned_password
 
   enum :role, { user: 0, admin: 1 }
 
@@ -16,8 +17,7 @@ class User < ApplicationRecord
   }
   validate :email_not_disposable
 
-  # Password complexity validation
-  validate :password_complexity
+  validates :password, password_strength: true, if: :password_required?
 
   after_create :set_trial_period
 
@@ -49,16 +49,6 @@ class User < ApplicationRecord
 
     if disposable_domains.include?(domain)
       errors.add(:email, "is from a disposable email provider. Please use a permanent email address.")
-    end
-  end
-
-  def password_complexity
-    return unless password.present?
-
-    # Minimum length is handled by Devise's validatable (we'll configure it separately)
-    # Check for at least one letter and one number
-    unless password.match?(/[A-Za-z]/) && password.match?(/\d/)
-      errors.add(:password, "must include at least one letter and one number")
     end
   end
 

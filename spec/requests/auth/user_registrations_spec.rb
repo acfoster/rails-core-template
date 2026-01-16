@@ -25,8 +25,8 @@ RSpec.describe "User Registrations", type: :request do
       {
         user: {
           email: "newuser@example.com",
-          password: "password123",
-          password_confirmation: "password123"
+          password: "Password123!",
+          password_confirmation: "Password123!"
         }
       }
     end
@@ -133,8 +133,8 @@ RSpec.describe "User Registrations", type: :request do
       attributes = {
         user: {
           email: "UPPERCASE@EXAMPLE.COM",
-          password: "password123",
-          password_confirmation: "password123"
+          password: "Password123!",
+          password_confirmation: "Password123!"
         }
       }
 
@@ -147,8 +147,8 @@ RSpec.describe "User Registrations", type: :request do
       attributes = {
         user: {
           email: "  whitespace@example.com  ",
-          password: "password123",
-          password_confirmation: "password123"
+          password: "Password123!",
+          password_confirmation: "Password123!"
         }
       }
 

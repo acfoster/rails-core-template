@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "User Sessions", type: :request do
-  let(:user) { create(:user, password: "password123", password_confirmation: "password123") }
+  let(:user) { create(:user, password: "Password123!", password_confirmation: "Password123!") }
 
   describe "GET /users/sign_in" do
     it "returns http success" do
@@ -49,7 +49,7 @@ RSpec.describe "User Sessions", type: :request do
         {
           user: {
             email: user.email,
-            password: "password123"
+            password: "Password123!"
           }
         }
       end
@@ -90,7 +90,7 @@ RSpec.describe "User Sessions", type: :request do
         post user_session_path, params: {
           user: {
             email: "wrong@example.com",
-            password: "password123"
+            password: "Password123!"
           }
         }
         expect(controller.current_user).to be_nil
@@ -120,7 +120,7 @@ RSpec.describe "User Sessions", type: :request do
         post user_session_path, params: {
           user: {
             email: "",
-            password: "password123"
+            password: "Password123!"
           }
         }
         expect(controller.current_user).to be_nil
@@ -146,7 +146,7 @@ RSpec.describe "User Sessions", type: :request do
         post user_session_path, params: {
           user: {
             email: user.email,
-            password: "password123"
+            password: "Password123!"
           }
         }
         # Login succeeds
@@ -164,7 +164,7 @@ RSpec.describe "User Sessions", type: :request do
         post user_session_path, params: {
           user: {
             email: user.email,
-            password: "password123"
+            password: "Password123!"
           }
         }
         expect(controller.current_user).to eq(user)
@@ -182,7 +182,7 @@ RSpec.describe "User Sessions", type: :request do
         post user_session_path, params: {
           user: {
             email: user.email,
-            password: "password123",
+            password: "Password123!",
             remember_me: "1"
           }
         }
@@ -193,7 +193,7 @@ RSpec.describe "User Sessions", type: :request do
         post user_session_path, params: {
           user: {
             email: user.email,
-            password: "password123",
+            password: "Password123!",
             remember_me: "0"
           }
         }
@@ -261,22 +261,22 @@ RSpec.describe "User Sessions", type: :request do
 
   describe "edge cases" do
     it "handles case-insensitive email login" do
-      user = create(:user, email: "casetest@example.com", password: "password123", password_confirmation: "password123")
+      user = create(:user, email: "casetest@example.com", password: "Password123!", password_confirmation: "Password123!")
       post user_session_path, params: {
         user: {
           email: "CASETEST@EXAMPLE.COM",
-          password: "password123"
+          password: "Password123!"
         }
       }
       expect(controller.current_user).to eq(user)
     end
 
     it "handles email with extra whitespace" do
-      user = create(:user, email: "whitespace@example.com", password: "password123", password_confirmation: "password123")
+      user = create(:user, email: "whitespace@example.com", password: "Password123!", password_confirmation: "Password123!")
       post user_session_path, params: {
         user: {
           email: "  whitespace@example.com  ",
-          password: "password123"
+          password: "Password123!"
         }
       }
       expect(controller.current_user).to eq(user)
