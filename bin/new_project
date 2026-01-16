@@ -203,8 +203,28 @@ fi
 update_database_config "config/database.yml"
 
 update_readme_title "README.md"
+replace_in_file "db/seeds.rb" "Core App Template" "$APP_NAME"
 replace_in_file "app/views/layouts/application.html.erb" "Core App Template" "$APP_NAME"
 replace_in_file "app/views/pages/home.html.erb" "Core App Template" "$APP_NAME"
+replace_in_file "docs/README.md" "Core App Template" "$APP_NAME"
+replace_in_file "docs/SETUP.md" "Core App Template" "$APP_NAME"
+replace_in_file "docs/PRODUCTION_SETUP.md" "Core App Template" "$APP_NAME"
+replace_in_file "app/assets/stylesheets/application.css" "Core App Template" "$APP_NAME"
+
+replace_in_file "app/views/layouts/application.html.erb" "Core App" "$APP_NAME"
+replace_in_file "app/views/layouts/admin.html.erb" "Core App" "$APP_NAME"
+replace_in_file "app/views/shared/_footer.html.erb" "Core App" "$APP_NAME"
+replace_in_file "app/views/shared/_navbar.html.erb" "Core App" "$APP_NAME"
+replace_in_file "app/views/pages/home.html.erb" "Core App" "$APP_NAME"
+replace_in_file "app/views/pages/contact.html.erb" "Core App" "$APP_NAME"
+replace_in_file "app/views/subscriptions/new.html.erb" "Core App" "$APP_NAME"
+replace_in_file "app/views/pwa/manifest.json.erb" "Core App" "$APP_NAME"
+replace_in_file "public/site.webmanifest" "Core App" "$APP_NAME"
+replace_in_file "app/assets/images/logo.svg" "Core App" "$APP_NAME"
+replace_in_file "spec/requests/auth/user_registrations_spec.rb" "Core App" "$APP_NAME"
+replace_in_file "spec/requests/auth/user_passwords_spec.rb" "Core App" "$APP_NAME"
+replace_in_file "spec/requests/auth/user_sessions_spec.rb" "Core App" "$APP_NAME"
+replace_in_file "spec/requests/subscriptions_spec.rb" "Core App" "$APP_NAME"
 
 if [[ "$dry_run" == "true" ]]; then
   echo "Dry run complete. No files changed."
