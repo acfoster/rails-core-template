@@ -9,6 +9,6 @@ if wkhtmltopdf_path.nil?
   Rails.logger.warn "Install wkhtmltopdf: brew install wkhtmltopdf (macOS) or via nixpacks (Railway)"
 end
 
-WickedPdf.config = {
-  exe_path: wkhtmltopdf_path || '/usr/bin/wkhtmltopdf' # fallback path
-}
+WickedPdf.configure do |config|
+  config.exe_path = wkhtmltopdf_path || '/usr/bin/wkhtmltopdf' # fallback path
+end
