@@ -37,6 +37,7 @@ Option 2: GitHub template flow
 
 ```bash
 bin/bootstrap
+bin/install-git-hooks
 bin/rails db:create db:migrate db:seed
 bin/rails s
 ```
@@ -84,6 +85,14 @@ bin/bootstrap
 bin/verify
 bin/rspec
 bin/test
+```
+
+## Git hooks
+
+Install the local git hooks once per clone to block pushes when lint/tests fail:
+
+```bash
+bin/install-git-hooks
 ```
 
 ## Tests
