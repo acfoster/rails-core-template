@@ -1,5 +1,5 @@
 # Seed data for Core App Template
-SEED_PASSWORD = "password123"
+SEED_PASSWORD = "Password123!"
 
 if Rails.env.development?
   puts "Clearing existing data..."

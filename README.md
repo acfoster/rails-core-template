@@ -58,11 +58,11 @@ The seed data creates an admin and a test user for local development. These are 
 
 Admin:
 - Email: admin@example.com
-- Password: password123
+- Password: Password123!
 
 Test user:
 - Email: test@example.com
-- Password: password123
+- Password: Password123!
 
 ## 🎨 Branding & Theme Customization
 

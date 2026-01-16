@@ -2,10 +2,11 @@
 <html>
 <head>
   <title>Admin | Core App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
-  <%= stylesheet_link_tag 'application', media: 'all' %>
-  <%= javascript_include_tag 'application' %>
+  <%= stylesheet_link_tag "theme", "tailwind", "application", "mobile", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
 </head>
 <body>
   <% if user_signed_in? && current_user.admin? %>

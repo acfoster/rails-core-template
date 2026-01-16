@@ -3,7 +3,7 @@ require 'test_helper'
 class SubscriptionsControllerTest < ActionDispatch::IntegrationTest
   # Test #create with confirmed user
   test "create redirects to Stripe checkout for confirmed user" do
-    user = User.new(email: "test1@example.com", password: "Password123")
+    user = User.new(email: "test1@example.com", password: "Password123!")
     user.skip_confirmation!
     user.save!
     sign_in user
@@ -22,7 +22,7 @@ class SubscriptionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create blocks unconfirmed user and does not call Stripe" do
-    user = User.new(email: "test2@example.com", password: "Password123")
+    user = User.new(email: "test2@example.com", password: "Password123!")
     user.save!
     sign_in user
 
@@ -36,7 +36,7 @@ class SubscriptionsControllerTest < ActionDispatch::IntegrationTest
 
   # Test #portal with confirmed user
   test "portal redirects to Stripe portal for confirmed user" do
-    user = User.new(email: "test3@example.com", password: "Password123")
+    user = User.new(email: "test3@example.com", password: "Password123!")
     user.skip_confirmation!
     user.save!
     sign_in user
@@ -55,7 +55,7 @@ class SubscriptionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "portal blocks unconfirmed user and does not call Stripe" do
-    user = User.new(email: "test4@example.com", password: "Password123")
+    user = User.new(email: "test4@example.com", password: "Password123!")
     user.save!
     sign_in user
 
@@ -69,7 +69,7 @@ class SubscriptionsControllerTest < ActionDispatch::IntegrationTest
 
   # Test #new (should not be blocked)
   test "new shows subscription page for confirmed user" do
-    user = User.new(email: "test5@example.com", password: "Password123")
+    user = User.new(email: "test5@example.com", password: "Password123!")
     user.skip_confirmation!
     user.save!
     sign_in user

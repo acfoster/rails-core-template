@@ -17,8 +17,8 @@ namespace :db do
 
     admin = User.create!(
       email: ENV.fetch('ADMIN_EMAIL', 'admin@example.com'),
-      password: ENV.fetch('ADMIN_PASSWORD', 'changeme123'),
-      password_confirmation: ENV.fetch('ADMIN_PASSWORD', 'changeme123'),
+      password: ENV.fetch('ADMIN_PASSWORD', 'ChangeMe123!'),
+      password_confirmation: ENV.fetch('ADMIN_PASSWORD', 'ChangeMe123!'),
       subscription_status: 'active',
       free_access: true,
       account_suspended: false
@@ -42,8 +42,8 @@ namespace :db do
     puts "👤 Creating admin user..."
     admin = User.create!(
       email: email,
-      password: ENV.fetch('ADMIN_PASSWORD', 'changeme123'),
-      password_confirmation: ENV.fetch('ADMIN_PASSWORD', 'changeme123'),
+      password: ENV.fetch('ADMIN_PASSWORD', 'ChangeMe123!'),
+      password_confirmation: ENV.fetch('ADMIN_PASSWORD', 'ChangeMe123!'),
       subscription_status: 'active',
       free_access: true,
       account_suspended: false
