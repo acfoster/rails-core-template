@@ -74,22 +74,41 @@ class WebhooksController < ApplicationController
       return
     end
 
-    # Handle the event
-    Stripe::SubscriptionService.handle_webhook_event(event)
+    begin
+      Stripe::SubscriptionService.handle_webhook_event(event)
 
-    Log.log(
-      log_type: 'http_request',
-      level: 'info',
-      message: "Stripe webhook processed successfully",
-      action: 'stripe_webhook_processed',
-      controller: 'webhooks',
-      request_id: request.request_id,
-      ip_address: request.remote_ip,
-      context: {
-        event_type: event.type,
-        event_id: event.id
-      }
-    )
+      Log.log(
+        log_type: 'http_request',
+        level: 'info',
+        message: "Stripe webhook processed successfully",
+        action: 'stripe_webhook_processed',
+        controller: 'webhooks',
+        request_id: request.request_id,
+        ip_address: request.remote_ip,
+        context: {
+          event_type: event.type,
+          event_id: event.id
+        }
+      )
+    rescue StandardError => e
+      Rails.logger.error "Error processing Stripe webhook #{event.type} (#{event.id}): #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+
+      Log.log(
+        log_type: 'error',
+        level: 'error',
+        message: "Stripe webhook processing failed",
+        action: 'stripe_webhook_processing_failed',
+        controller: 'webhooks',
+        request_id: request.request_id,
+        ip_address: request.remote_ip,
+        context: {
+          event_type: event.type,
+          event_id: event.id,
+          error: e.message
+        }
+      )
+    end
 
     render json: { status: "success" }, status: 200
   end

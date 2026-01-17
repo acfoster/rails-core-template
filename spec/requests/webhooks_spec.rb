@@ -15,6 +15,12 @@ RSpec.describe "Webhooks", type: :request do
         }
       }
     }
+    let(:headers) {
+      {
+        "Content-Type" => "application/json",
+        "Stripe-Signature" => "test_signature"
+      }
+    }
 
     before do
       stub_const("ENV", ENV.to_hash.merge(
@@ -32,10 +38,7 @@ RSpec.describe "Webhooks", type: :request do
     end
 
     it "returns http success" do
-      post webhooks_stripe_path, params: event_data.to_json, headers: {
-        "Content-Type" => "application/json",
-        "Stripe-Signature" => "test_signature"
-      }
+      post webhooks_stripe_path, params: event_data.to_json, headers: headers
       expect(response).to have_http_status(:success)
     end
 
@@ -48,11 +51,33 @@ RSpec.describe "Webhooks", type: :request do
           data: double("data", object: {}))
       )
 
-      post webhooks_stripe_path, params: event_data.to_json, headers: {
-        "Content-Type" => "application/json",
-        "Stripe-Signature" => "test_signature"
-      }
+      post webhooks_stripe_path, params: event_data.to_json, headers: headers
       expect(response).to have_http_status(:success)
+    end
+
+    it "returns success even when event processing raises an error" do
+      allow(Stripe::SubscriptionService).to receive(:handle_webhook_event).and_raise(StandardError, "boom")
+
+      post webhooks_stripe_path, params: event_data.to_json, headers: headers
+      expect(response).to have_http_status(:success)
+    end
+
+    it "returns bad request for invalid signature" do
+      allow(::Stripe::Webhook).to receive(:construct_event).and_raise(
+        ::Stripe::SignatureVerificationError.new("bad signature", "sig_header")
+      )
+
+      post webhooks_stripe_path, params: event_data.to_json, headers: headers
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "returns bad request for invalid JSON payload" do
+      allow(::Stripe::Webhook).to receive(:construct_event).and_raise(
+        JSON::ParserError.new("unexpected token")
+      )
+
+      post webhooks_stripe_path, params: "{invalid_json", headers: headers
+      expect(response).to have_http_status(:bad_request)
     end
   end
 end

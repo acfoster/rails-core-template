@@ -165,7 +165,6 @@ module Stripe
       Rails.logger.error "Error processing webhook #{event.type} (#{event.id}): #{e.message}"
       Rails.logger.error e.backtrace.join("\n")
       Sentry.capture_exception(e, extra: { event_type: event.type, event_id: event.id, event_data: event.data.object.to_hash })
-      raise
     end
 
     class << self
