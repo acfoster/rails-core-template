@@ -31,7 +31,7 @@ gem "stripe", "~> 12.0"
 gem "ruby-openai", "~> 7.0"
 
 # Anthropic API (Claude)
-gem "anthropic", "~> 0.3.0"
+gem "anthropic", "~> 1.16.3"
 
 # Error tracking
 gem "sentry-ruby", "~> 5.18"
